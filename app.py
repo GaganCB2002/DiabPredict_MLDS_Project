@@ -41,9 +41,16 @@ def load_user(user_id):
             return User(id=row[0], username=row[1], role=row[2])
     return None
 
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "model_parameters.csv")
 
-MODEL_PATH = "model_parameters.csv"
-DB_PATH = "hms.db"
+import os
+# Use /tmp for writable SQLite database in Vercel Serverless environments
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/hms.db"
+else:
+    DB_PATH = "hms.db"
 
 COLUMNS_V1 = [
     "pregnancies",
