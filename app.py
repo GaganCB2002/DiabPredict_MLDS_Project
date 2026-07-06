@@ -8,8 +8,8 @@ from flask_login import (
     current_user,
 )
 from werkzeug.security import generate_password_hash, check_password_hash
-import pandas as pd
-import numpy as np
+import csv
+import math
 import os
 import sqlite3
 import datetime
@@ -74,13 +74,21 @@ def load_model():
     if not os.path.exists(MODEL_PATH):
         print("Warning: model_parameters.csv not found. Please run model.py")
         return None
-    df = pd.read_csv(MODEL_PATH)
-    intercept = df[df["Feature"] == "Intercept"]["Weight"].values[0]
-    feature_rows = df[df["Feature"] != "Intercept"]
-    features = list(feature_rows["Feature"])
-    weights = feature_rows["Weight"].values
-    means = feature_rows["Mean"].values
-    scales = feature_rows["Scale"].values
+    intercept = 0.0
+    features = []
+    weights = []
+    means = []
+    scales = []
+    with open(MODEL_PATH, 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row['Feature'] == 'Intercept':
+                intercept = float(row['Weight'])
+            else:
+                features.append(row['Feature'])
+                weights.append(float(row['Weight']))
+                means.append(float(row['Mean']))
+                scales.append(float(row['Scale']))
     return {
         "intercept": intercept,
         "features": features,
@@ -433,10 +441,9 @@ def run_prediction(payload):
         else:
             raw_value = input_values[canonical_key]
         input_data.append(float(raw_value))
-    input_array = np.array(input_data)
-    scaled_input = (input_array - model_data["means"]) / model_data["scales"]
-    z = np.dot(scaled_input, model_data["weights"]) + model_data["intercept"]
-    probability = float(1 / (1 + np.exp(-z)))
+    scaled_input = [(val - mean) / scale for val, mean, scale in zip(input_data, model_data["means"], model_data["scales"])]
+    z = sum(s * w for s, w in zip(scaled_input, model_data["weights"])) + model_data["intercept"]
+    probability = float(1 / (1 + math.exp(-z)))
     prediction = 1 if probability >= 0.5 else 0
     if prediction == 1:
         message = f"Based on the data, {name} is predicted to have diabetes."
