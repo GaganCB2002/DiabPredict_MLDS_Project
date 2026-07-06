@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - DiabPredict AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: { medical: { blue: '#2563EB', cyan: '#0891B2', emerald: '#059669', navy: '#FFF8F0' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="bg-[#FFF8F0] text-[#1A1A2E] antialiased min-h-screen flex items-center justify-center py-12 overflow-y-auto">
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 opacity-40 pointer-events-none"></canvas>
+    
+    <div class="w-full max-w-xl px-6 relative z-10">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-medical-blue to-medical-cyan">DiabPredict AI</h1>
+            <p class="text-[#6B7280] mt-2">Create your medical workspace account</p>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-8 shadow-lg relative overflow-hidden">
+            <form id="signupForm" class="space-y-5">
+                <div id="errorBox" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="errorMsg"></span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Choose a username"
+                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-[#1A1A2E] focus:outline-none focus:border-medical-cyan transition-all shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Create a password"
+                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-[#1A1A2E] focus:outline-none focus:border-medical-cyan transition-all shadow-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="name@example.com"
+                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-[#1A1A2E] focus:outline-none focus:border-medical-cyan transition-all shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Phone</label>
+                        <input type="text" id="phone" name="phone" required placeholder="e.g. 123-456-7890"
+                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-[#1A1A2E] focus:outline-none focus:border-medical-cyan transition-all shadow-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Account Role</label>
+                    <select id="role" name="role" required class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-[#1A1A2E] focus:outline-none focus:border-medical-cyan transition-all shadow-sm appearance-none cursor-pointer">
+                        <option value="Patient">Patient</option>
+                        <option value="Doctor">Doctor</option>
+                    </select>
+                </div>
+
+                <!-- Dynamic Fields: Patient -->
+                <div id="patientFields" class="space-y-5 bg-white/40 p-4 rounded-xl border border-[#D1D5DB]/50">
+                    <p class="text-xs font-semibold text-medical-cyan uppercase tracking-wider">Patient Profile</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-[#6B7280] mb-1">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" class="w-full bg-white border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm text-[#1A1A2E] focus:outline-none focus:border-medical-cyan">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[#6B7280] mb-1">Gender</label>
+                            <select id="gender" name="gender" class="w-full bg-white border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm text-[#1A1A2E] focus:outline-none focus:border-medical-cyan">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[#6B7280] mb-1">Blood Group</label>
+                            <input type="text" id="blood_group" name="blood_group" placeholder="e.g. O+" class="w-full bg-white border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm text-[#1A1A2E] focus:outline-none focus:border-medical-cyan">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Fields: Doctor -->
+                <div id="doctorFields" class="space-y-5 bg-white/40 p-4 rounded-xl border border-[#D1D5DB]/50 hidden">
+                    <p class="text-xs font-semibold text-medical-blue uppercase tracking-wider">Doctor Profile</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-[#6B7280] mb-1">Specialization</label>
+                            <input type="text" id="specialization" name="specialization" placeholder="e.g. Endocrinologist" class="w-full bg-white border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm text-[#1A1A2E] focus:outline-none focus:border-medical-cyan">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-[#6B7280] mb-1">Department</label>
+                            <input type="text" id="department" name="department" placeholder="e.g. Diabetology" class="w-full bg-white border border-[#D1D5DB] rounded-lg px-3 py-2 text-sm text-[#1A1A2E] focus:outline-none focus:border-medical-cyan">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-medical-blue hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-xl transition-colors flex items-center justify-center gap-3 shadow-sm mt-4">
+                    <span class="font-bold text-white" id="btn-text">Create Account</span>
+                    <i class="fa-solid fa-user-plus text-white" id="btn-icon"></i>
+                </button>
+                
+                <div class="text-center mt-6">
+                    <p class="text-sm text-[#6B7280]">Already have an account? <a href="/login" class="text-medical-cyan hover:underline font-bold">Sign in</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('bg-canvas');
+            if (canvas && window.THREE) {
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xFFF8F0);
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 15;
+                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                const count = 400;
+                const geo = new THREE.BufferGeometry();
+                const pos = new Float32Array(count * 3);
+                for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 40;
+                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const mat = new THREE.PointsMaterial({
+                    color: 0x2563EB, size: 0.04, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
+                });
+                const pts = new THREE.Points(geo, mat);
+                scene.add(pts);
+                function animate() {
+                    pts.rotation.y += 0.0005;
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(animate);
+                }
+                animate();
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        })();
+
+        const roleSelect = document.getElementById('role');
+        const patientFields = document.getElementById('patientFields');
+        const doctorFields = document.getElementById('doctorFields');
+
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'Patient') {
+                patientFields.classList.remove('hidden');
+                doctorFields.classList.add('hidden');
+            } else {
+                doctorFields.classList.remove('hidden');
+                patientFields.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            btnText.textContent = 'Creating Account...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+            btn.disabled = true;
+
+            const errorBox = document.getElementById('errorBox');
+            errorBox.classList.add('hidden');
+
+            const payload = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                role: roleSelect.value,
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                blood_group: document.getElementById('blood_group').value,
+                specialization: document.getElementById('specialization').value,
+                department: document.getElementById('department').value
+            };
+
+            fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    document.getElementById('errorMsg').textContent = data.error || 'Registration failed';
+                    errorBox.classList.remove('hidden');
+                    btnText.textContent = 'Create Account';
+                    btnIcon.className = 'fa-solid fa-user-plus text-white';
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                document.getElementById('errorMsg').textContent = 'Connection error. Please try again.';
+                errorBox.classList.remove('hidden');
+                btnText.textContent = 'Create Account';
+                btnIcon.className = 'fa-solid fa-user-plus text-white';
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

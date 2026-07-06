@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Admin - DiabPredict AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+                    colors: { brand: { dark: '#FFFFFF', accent: '#2563EB', accent2: '#0891B2', danger: '#DC2626', emerald: '#059669', success: '#16A34A', warning: '#D97706', info: '#3B82F6' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body class="bg-white text-[#1A1A2E] antialiased min-h-screen">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <p class="text-brand-accent text-sm tracking-widest uppercase mb-1">Admin Panel</p>
+                <h1 class="font-display text-4xl font-bold tracking-tight">Hospital Management System</h1>
+            </div>
+            <a href="/" class="text-brand-accent border border-brand-accent/40 px-5 py-2.5 rounded-full hover:bg-brand-accent hover:text-white transition-all text-sm"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Home</a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="statsGrid">
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Patients</p>
+                <p class="font-display text-4xl font-bold" id="statPatients">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Doctors</p>
+                <p class="font-display text-4xl font-bold" id="statDoctors">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Appointments Today</p>
+                <p class="font-display text-4xl font-bold" id="statAppointments">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Predictions</p>
+                <p class="font-display text-4xl font-bold" id="statPredictions">0</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-4 mb-6 border-b border-[#E8E0D8]">
+            <button class="tab-btn active px-6 py-3 text-sm font-bold tracking-widest uppercase border-b-2 border-brand-accent text-brand-accent transition-all" data-tab="overview">Overview</button>
+            <button class="tab-btn px-6 py-3 text-sm font-bold tracking-widest uppercase border-b-2 border-transparent text-gray-400 hover:text-[#1A1A2E] transition-all" data-tab="patients">Patients</button>
+            <button class="tab-btn px-6 py-3 text-sm font-bold tracking-widest uppercase border-b-2 border-transparent text-gray-400 hover:text-[#1A1A2E] transition-all" data-tab="doctors">Doctors</button>
+        </div>
+
+        <!-- Tab: Overview -->
+        <div id="tab-overview" class="tab-content">
+            <div class="card-surface p-8">
+                <h2 class="font-display text-2xl font-bold mb-6">System Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-display text-lg font-bold mb-4">Recent Activity</h3>
+                        <div id="recentActivity" class="space-y-3">
+                            <p class="text-gray-400 text-sm">No recent activity.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-display text-lg font-bold mb-4">System Stats</h3>
+                        <div id="systemStats" class="space-y-4">
+                            <div class="flex justify-between py-2 border-b border-[#E8E0D8]">
+                                <span class="text-gray-400">Hospital Occupancy</span>
+                                <span class="font-bold" id="statOccupancy">78%</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-[#E8E0D8]">
+                                <span class="text-gray-400">Total Users</span>
+                                <span class="font-bold" id="statTotalUsers">0</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span class="text-gray-400">Platform Status</span>
+                                <span class="font-bold text-brand-emerald"><i class="fa-solid fa-circle text-[8px] mr-1"></i>Operational</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Patients -->
+        <div id="tab-patients" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-display text-2xl font-bold">Patient Records</h2>
+                <button id="addPatientBtn" class="btn-primary px-5 py-2.5 rounded-xl text-sm text-white flex items-center gap-2"><i class="fa-solid fa-plus"></i> Add Patient</button>
+            </div>
+            <div class="card-surface overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E8E0D8] text-left">
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">ID</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Username</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Email</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Phone</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">DOB</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Gender</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Blood Group</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            <tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Doctors -->
+        <div id="tab-doctors" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-display text-2xl font-bold">Doctor Directory</h2>
+                <button id="addDoctorBtn" class="btn-primary px-5 py-2.5 rounded-xl text-sm text-white flex items-center gap-2"><i class="fa-solid fa-plus"></i> Add Doctor</button>
+            </div>
+            <div class="card-surface overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E8E0D8] text-left">
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">ID</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Username</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Email</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Phone</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Specialization</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Department</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsTableBody">
+                            <tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div id="patientModal" class="fixed inset-0 bg-black/30 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-lg mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display text-xl font-bold">Add Patient</h3>
+                <button onclick="closeModal('patientModal')" class="text-gray-400 hover:text-[#1A1A2E]"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="patientForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Username</label>
+                        <input type="text" id="patUsername" required class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Password</label>
+                        <input type="text" id="patPassword" value="patient123" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Email</label>
+                        <input type="email" id="patEmail" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Phone</label>
+                        <input type="text" id="patPhone" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">DOB</label>
+                        <input type="date" id="patDob" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Gender</label>
+                        <select id="patGender" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Blood Group</label>
+                        <select id="patBloodGroup" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 bg-brand-accent text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors">Create Patient</button>
+                    <button type="button" onclick="closeModal('patientModal')" class="btn-secondary px-4 py-2.5 rounded-xl text-sm">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Doctor Modal -->
+    <div id="doctorModal" class="fixed inset-0 bg-black/30 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-lg mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display text-xl font-bold">Add Doctor</h3>
+                <button onclick="closeModal('doctorModal')" class="text-gray-400 hover:text-[#1A1A2E]"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="doctorForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Username</label>
+                        <input type="text" id="docUsername" required class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Password</label>
+                        <input type="text" id="docPassword" value="doctor123" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Email</label>
+                        <input type="email" id="docEmail" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Phone</label>
+                        <input type="text" id="docPhone" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Specialization</label>
+                        <input type="text" id="docSpecialization" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[#6B7280] mb-1">Department</label>
+                        <input type="text" id="docDepartment" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 bg-brand-accent text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors">Create Doctor</button>
+                    <button type="button" onclick="closeModal('doctorModal')" class="btn-secondary px-4 py-2.5 rounded-xl text-sm">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active', 'border-brand-accent', 'text-brand-accent');
+                    b.classList.add('border-transparent', 'text-gray-400');
+                });
+                btn.classList.add('active', 'border-brand-accent', 'text-brand-accent');
+                btn.classList.remove('border-transparent', 'text-gray-400');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
+                document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+            });
+        });
+
+                // Load admin stats
+            fetch('/api/admin/stats')
+                .then(r => r.json())
+                .then(stats => {
+                    document.getElementById('statPatients').textContent = stats.totalPatients;
+                    document.getElementById('statDoctors').textContent = stats.totalDoctors;
+                    document.getElementById('statAppointments').textContent = stats.appointmentsToday;
+                    document.getElementById('statPredictions').textContent = stats.predictionsCompleted;
+                    document.getElementById('statOccupancy').textContent = stats.hospitalOccupancy || '0%';
+                    document.getElementById('statTotalUsers').textContent = stats.totalPatients + stats.totalDoctors;
+                    const activityDiv = document.getElementById('recentActivity');
+                    if (stats.recentActivity && stats.recentActivity.length > 0) {
+                        activityDiv.innerHTML = stats.recentActivity.map(a =>
+                            `<div class="flex justify-between items-center py-2 border-b border-[#E8E0D8] last:border-b-0">
+                                <span class="text-sm text-gray-400">${a.action}</span>
+                                <span class="text-xs text-gray-500">${a.timestamp || ''}</span>
+                            </div>`
+                        ).join('');
+                    }
+                })
+                .catch(() => {});
+
+        // Load patients
+        function loadPatients() {
+            fetch('/api/admin/patients')
+                .then(r => r.json())
+                .then(data => {
+                    const tbody = document.getElementById('patientsTableBody');
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">No patients found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = data.map(p => `<tr class="border-b border-[#E8E0D8] hover:bg-gray-50">
+                        <td class="px-6 py-4 font-mono text-xs">${p.id}</td>
+                        <td class="px-6 py-4 font-medium">${p.username}</td>
+                        <td class="px-6 py-4 text-gray-400">${p.email || '-'}</td>
+                        <td class="px-6 py-4 text-gray-400">${p.phone || '-'}</td>
+                        <td class="px-6 py-4 text-gray-400">${p.dob || '-'}</td>
+                        <td class="px-6 py-4">${p.gender || '-'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold">${p.blood_group || '-'}</span></td>
+                    </tr>`).join('');
+                })
+                .catch(() => {
+                    document.getElementById('patientsTableBody').innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center text-gray-400">Error loading patients.</td></tr>';
+                });
+        }
+
+        // Load doctors
+        function loadDoctors() {
+            fetch('/api/admin/doctors')
+                .then(r => r.json())
+                .then(data => {
+                    const tbody = document.getElementById('doctorsTableBody');
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">No doctors found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = data.map(d => `<tr class="border-b border-[#E8E0D8] hover:bg-gray-50">
+                        <td class="px-6 py-4 font-mono text-xs">${d.id}</td>
+                        <td class="px-6 py-4 font-medium">${d.username}</td>
+                        <td class="px-6 py-4 text-gray-400">${d.email || '-'}</td>
+                        <td class="px-6 py-4 text-gray-400">${d.phone || '-'}</td>
+                        <td class="px-6 py-4">${d.specialization || '-'}</td>
+                        <td class="px-6 py-4">${d.department || '-'}</td>
+                    </tr>`).join('');
+                })
+                .catch(() => {
+                    document.getElementById('doctorsTableBody').innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">Error loading doctors.</td></tr>';
+                });
+        }
+
+        loadPatients();
+        loadDoctors();
+
+        // Add Patient
+        document.getElementById('addPatientBtn').addEventListener('click', () => {
+            document.getElementById('patientModal').classList.remove('hidden');
+        });
+
+        document.getElementById('patientForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('patUsername').value,
+                password: document.getElementById('patPassword').value,
+                email: document.getElementById('patEmail').value,
+                phone: document.getElementById('patPhone').value,
+                dob: document.getElementById('patDob').value,
+                gender: document.getElementById('patGender').value,
+                blood_group: document.getElementById('patBloodGroup').value
+            };
+            fetch('/api/admin/patients', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    closeModal('patientModal');
+                    document.getElementById('patientForm').reset();
+                    loadPatients();
+                }
+            })
+            .catch(() => alert('Failed to create patient'));
+        });
+
+        // Add Doctor
+        document.getElementById('addDoctorBtn').addEventListener('click', () => {
+            document.getElementById('doctorModal').classList.remove('hidden');
+        });
+
+        document.getElementById('doctorForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('docUsername').value,
+                password: document.getElementById('docPassword').value,
+                email: document.getElementById('docEmail').value,
+                phone: document.getElementById('docPhone').value,
+                specialization: document.getElementById('docSpecialization').value,
+                department: document.getElementById('docDepartment').value
+            };
+            fetch('/api/admin/doctors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    closeModal('doctorModal');
+                    document.getElementById('doctorForm').reset();
+                    loadDoctors();
+                }
+            })
+            .catch(() => alert('Failed to create doctor'));
+        });
+    });
+    </script>
+</body>
+</html>

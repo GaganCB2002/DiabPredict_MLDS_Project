@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis - DiabPredict AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+                    colors: { brand: { dark: '#FFFFFF', accent: '#2563EB', accent2: '#0891B2', danger: '#DC2626', emerald: '#059669', success: '#16A34A', warning: '#D97706', info: '#3B82F6' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body class="bg-white text-[#1A1A2E] antialiased min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-80 bg-white border-r border-[#E8E0D8] flex flex-col shrink-0">
+            <div class="p-6 border-b border-[#E8E0D8]">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-display font-bold text-lg">Assessment History</h2>
+                    <a href="/" class="text-brand-accent text-sm hover:underline"><i class="fa-solid fa-house mr-1"></i>Home</a>
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchHistory" placeholder="Search by name..." class="w-full bg-gray-50 border border-[#E8E0D8] rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-all">
+                </div>
+            </div>
+            <div id="historyList" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <div class="text-center text-gray-400 text-sm py-12"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading...</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-5xl mx-auto">
+                <!-- Header -->
+                <div class="mb-8">
+                    <p class="text-brand-accent text-sm tracking-widest uppercase mb-2">Analysis Dashboard</p>
+                    <h1 class="font-display text-4xl font-bold tracking-tight">Detailed Assessment View</h1>
+                    <p class="text-gray-400 mt-2 font-light">Select an assessment from the sidebar to view detailed metrics and charts.</p>
+                </div>
+
+                <!-- No Selection State -->
+                <div id="noSelection" class="text-center py-24">
+                    <i class="fa-solid fa-chart-simple text-6xl text-gray-300 mb-6"></i>
+                    <h2 class="font-display text-2xl font-bold mb-2">No Assessment Selected</h2>
+                    <p class="text-gray-400 font-light">Choose a prediction from the sidebar or submit a new one.</p>
+                    <a href="/#analysis" class="inline-block mt-6 text-brand-accent border border-brand-accent/40 px-6 py-3 rounded-full hover:bg-brand-accent hover:text-white transition-all"><i class="fa-solid fa-plus mr-2"></i>New Assessment</a>
+                </div>
+
+                <!-- Selected Assessment View -->
+                <div id="assessmentView" class="hidden">
+                    <!-- Summary Card -->
+                    <div class="card-surface p-6 mb-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm tracking-widest uppercase mb-1">Patient</p>
+                                <h2 id="detailName" class="font-display text-2xl font-bold"></h2>
+                                <p id="detailTimestamp" class="text-gray-400 text-sm mt-1"></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="reopenBtn" class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> Reopen</button>
+                                <button id="deleteBtn" class="btn-danger px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verdict + Probability -->
+                    <div class="card-surface p-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span id="detailVerdict" class="inline-block px-4 py-1.5 rounded-full text-xs tracking-widest uppercase font-bold"></span>
+                                <p id="detailMessage" class="text-gray-400 mt-3 font-light max-w-lg"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-gray-400 text-sm tracking-widest uppercase mb-1">Probability</p>
+                                <span id="detailProbability" class="font-display text-5xl font-bold tabular-nums"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="card-surface p-6">
+                            <h3 class="font-display text-base font-bold mb-4">Risk Distribution</h3>
+                            <div class="w-full h-[250px]">
+                                <canvas id="detailDonutChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card-surface p-6">
+                            <h3 class="font-display text-base font-bold mb-4">Metric Comparison</h3>
+                            <div class="w-full h-[250px]">
+                                <canvas id="detailBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Metrics Table -->
+                    <div class="card-surface p-6 mb-6">
+                        <h3 class="font-display text-base font-bold mb-4">Clinical Metrics</h3>
+                        <div id="metricsTable" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const historyList = document.getElementById('historyList');
+        const searchInput = document.getElementById('searchHistory');
+        const noSelection = document.getElementById('noSelection');
+        const assessmentView = document.getElementById('assessmentView');
+        let allPredictions = [];
+        let currentPrediction = null;
+        let donutChartObj = null;
+        let barChartObj = null;
+
+        // Load history
+        fetch('/api/history')
+            .then(r => r.json())
+            .then(data => {
+                allPredictions = data;
+                renderHistory(data);
+            })
+            .catch(() => {
+                historyList.innerHTML = '<div class="text-center text-gray-400 text-sm py-12"><i class="fa-solid fa-exclamation-triangle mr-2"></i>Failed to load history</div>';
+            });
+
+        function renderHistory(predictions) {
+            if (predictions.length === 0) {
+                historyList.innerHTML = '<div class="text-center text-gray-400 text-sm py-12">No assessments yet.</div>';
+                return;
+            }
+            historyList.innerHTML = predictions.map(p => {
+                const isHigh = p.prediction === 1;
+                const date = p.timestamp ? p.timestamp.split(' ')[0] : '';
+                return `<div class="history-item cursor-pointer p-4 rounded-xl border border-[#E8E0D8] hover:border-brand-accent/30 transition-all hover:shadow-sm" data-id="${p.id}">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="font-display font-bold text-sm">${p.name || 'Unknown'}</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-bold ${isHigh ? 'bg-red-50 text-brand-danger' : 'bg-emerald-50 text-brand-emerald'}">${isHigh ? 'HIGH' : 'LOW'}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">${date || ''}</span>
+                        <span class="text-xs font-bold tabular-nums ${isHigh ? 'text-brand-danger' : 'text-brand-emerald'}">${(p.probability * 100).toFixed(1)}%</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            document.querySelectorAll('.history-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = parseInt(el.dataset.id);
+                    const pred = allPredictions.find(p => p.id === id);
+                    if (pred) selectPrediction(pred);
+                });
+            });
+        }
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase();
+            const filtered = allPredictions.filter(p => (p.name || '').toLowerCase().includes(q));
+            renderHistory(filtered);
+        });
+
+        function selectPrediction(pred) {
+            currentPrediction = pred;
+            noSelection.classList.add('hidden');
+            assessmentView.classList.remove('hidden');
+
+            document.getElementById('detailName').textContent = pred.name || 'Unknown';
+            document.getElementById('detailTimestamp').textContent = pred.timestamp || '';
+
+            const isHigh = pred.prediction === 1;
+            const verdictEl = document.getElementById('detailVerdict');
+            verdictEl.textContent = isHigh ? 'CRITICAL RISK' : 'NOMINAL RANGE';
+            verdictEl.className = `inline-block px-4 py-1.5 rounded-full text-xs tracking-widest uppercase font-bold ${isHigh ? 'bg-red-50 text-brand-danger border border-red-200' : 'bg-emerald-50 text-brand-emerald border border-emerald-200'}`;
+
+            document.getElementById('detailMessage').textContent = pred.message || '';
+            const probEl = document.getElementById('detailProbability');
+            probEl.textContent = (pred.probability * 100).toFixed(1) + '%';
+            probEl.style.color = isHigh ? '#DC2626' : '#0891B2';
+
+            // Donut chart
+            if (donutChartObj) donutChartObj.destroy();
+            const donutCtx = document.getElementById('detailDonutChart').getContext('2d');
+            donutChartObj = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Risk', 'Low Risk'],
+                    datasets: [{
+                        data: [isHigh ? pred.probability * 100 : (1 - pred.probability) * 100, isHigh ? (1 - pred.probability) * 100 : pred.probability * 100],
+                        backgroundColor: ['#DC2626', '#0891B2'],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, color: '#6b7280' } } }
+                }
+            });
+
+            // Bar chart
+            if (barChartObj) barChartObj.destroy();
+            const barCtx = document.getElementById('detailBarChart').getContext('2d');
+            const labels = ['GLU', 'BMI', 'AGE', 'B.P.', 'INS', 'SKIN', 'PREG', 'PED'];
+            const values = [
+                pred.glucose || 0, pred.bmi || 0, pred.age || 0,
+                pred.bloodPressure || 0, pred.insulin || 0,
+                pred.skinThickness || 0, pred.pregnancies || 0,
+                pred.diabetesPedigreeFunction || 0
+            ];
+            const maxVals = [200, 50, 80, 120, 300, 60, 15, 2.5];
+            const normalized = values.map((v, i) => Math.min((v / maxVals[i]) * 100, 100));
+            const barColors = labels.map((_, i) => i < 5 ? (isHigh ? '#DC2626' : '#0891B2') : '#6B7280');
+            barChartObj = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: normalized,
+                        backgroundColor: barColors,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#9ca3af', callback: v => v + '%' } },
+                        x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+
+            // Metrics table
+            const metricsTable = document.getElementById('metricsTable');
+            const metricItems = [
+                { label: 'Glucose', value: pred.glucose, unit: 'mg/dL' },
+                { label: 'BMI', value: pred.bmi, unit: '' },
+                { label: 'Age', value: pred.age, unit: 'yrs' },
+                { label: 'Blood Pressure', value: pred.bloodPressure, unit: 'mmHg' },
+                { label: 'Insulin', value: pred.insulin, unit: 'IU/mL' },
+                { label: 'Skin Thickness', value: pred.skinThickness, unit: 'mm' },
+                { label: 'Pregnancies', value: pred.pregnancies, unit: '' },
+                { label: 'Pedigree Func.', value: pred.diabetesPedigreeFunction, unit: '' }
+            ];
+            metricsTable.innerHTML = metricItems.map(m => `
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <p class="text-gray-400 text-xs">${m.label}</p>
+                    <p class="font-display font-bold text-lg mt-1">${m.value ?? 0} <span class="text-xs text-gray-400 font-normal">${m.unit}</span></p>
+                </div>
+            `).join('');
+
+            // Reopen button - pre-fill form with prediction data
+            document.getElementById('reopenBtn').onclick = () => {
+                const params = new URLSearchParams();
+                params.set('name', pred.name || '');
+                params.set('glucose', pred.glucose || '');
+                params.set('bmi', pred.bmi || '');
+                params.set('age', pred.age || '');
+                params.set('bloodPressure', pred.bloodPressure || '');
+                params.set('insulin', pred.insulin || '');
+                params.set('skinThickness', pred.skinThickness || '');
+                params.set('pregnancies', pred.pregnancies || '');
+                params.set('diabetesPedigreeFunction', pred.diabetesPedigreeFunction || '');
+                window.location.href = '/#' + params.toString();
+            };
+
+            // Delete button
+            document.getElementById('deleteBtn').onclick = () => {
+                if (!confirm('Delete this assessment?')) return;
+                fetch(`/api/prediction/${pred.id}`, { method: 'DELETE' })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            allPredictions = allPredictions.filter(p => p.id !== pred.id);
+                            renderHistory(allPredictions);
+                            assessmentView.classList.add('hidden');
+                            noSelection.classList.remove('hidden');
+                        }
+                    })
+                    .catch(() => alert('Failed to delete'));
+            };
+        }
+    });
+    </script>
+</body>
+</html>

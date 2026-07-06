@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMR Portal - DiabPredict AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] },
+                    colors: { brand: { dark: '#FFFFFF', accent: '#2563EB', accent2: '#0891B2', danger: '#DC2626', emerald: '#059669', success: '#16A34A', warning: '#D97706', info: '#3B82F6' } }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body class="bg-white text-[#1A1A2E] antialiased min-h-screen">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <p class="text-brand-success text-sm tracking-widest uppercase mb-1">EMR Portal</p>
+                <h1 class="font-display text-4xl font-bold tracking-tight">Electronic Medical Records</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand-success animate-pulse"></span> Dr. {{ current_user.username }}</span>
+                <a href="/" class="text-brand-accent border border-brand-accent/40 px-5 py-2.5 rounded-full hover:bg-brand-accent hover:text-white transition-all text-sm"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Home</a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="statsGrid">
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Total Patients</p>
+                <p class="font-display text-4xl font-bold" id="statPatients">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Consultations</p>
+                <p class="font-display text-4xl font-bold" id="statConsultations">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Today's Appointments</p>
+                <p class="font-display text-4xl font-bold" id="statTodayAppointments">0</p>
+            </div>
+            <div class="card-surface p-6">
+                <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Pending</p>
+                <p class="font-display text-4xl font-bold" id="statPending">0</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-4 mb-6 border-b border-[#E8E0D8]">
+            <button class="tab-btn active px-6 py-3 text-sm font-bold tracking-widest uppercase border-b-2 border-brand-success text-brand-success transition-all" data-tab="patients">Patient Queue</button>
+            <button class="tab-btn px-6 py-3 text-sm font-bold tracking-widest uppercase border-b-2 border-transparent text-gray-400 hover:text-[#1A1A2E] transition-all" data-tab="consultations">Consultations</button>
+        </div>
+
+        <!-- Tab: Patient Queue -->
+        <div id="tab-patients" class="tab-content">
+            <div class="card-surface overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E8E0D8] text-left">
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">ID</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Patient</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Email</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Phone</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Gender</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Blood Group</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Predictions</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                            <tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Consultations -->
+        <div id="tab-consultations" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-display text-2xl font-bold">Consultation Records</h2>
+                <button id="addConsultBtn" class="px-5 py-2.5 rounded-xl text-sm text-white flex items-center gap-2" style="background-color: #16A34A;"><i class="fa-solid fa-plus"></i> New Consultation</button>
+            </div>
+            <div class="card-surface overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E8E0D8] text-left">
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Date</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Patient</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Symptoms</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Diagnosis</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Prescriptions</th>
+                                <th class="px-6 py-4 text-gray-400 font-medium tracking-widest uppercase text-xs">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="consultationsTableBody">
+                            <tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultation Modal -->
+    <div id="consultModal" class="fixed inset-0 bg-black/30 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-2xl mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display text-xl font-bold">New Consultation</h3>
+                <button onclick="closeModal('consultModal')" class="text-gray-400 hover:text-[#1A1A2E]"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="consultForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Patient</label>
+                    <select id="consultPatientId" required class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                        <option value="">Select patient...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Date</label>
+                    <input type="date" id="consultDate" required class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Symptoms</label>
+                    <textarea id="consultSymptoms" rows="2" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Diagnosis</label>
+                    <textarea id="consultDiagnosis" rows="2" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#6B7280] mb-1">Notes</label>
+                    <textarea id="consultNotes" rows="2" class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent"></textarea>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium text-[#6B7280]">Prescriptions</label>
+                        <button type="button" onclick="addPrescriptionField()" class="text-brand-accent text-xs flex items-center gap-1"><i class="fa-solid fa-plus"></i> Add Medicine</button>
+                    </div>
+                    <div id="prescriptionsContainer" class="space-y-2">
+                        <div class="prescription-row grid grid-cols-3 gap-2">
+                            <input type="text" placeholder="Medicine name" class="med-name w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                            <input type="text" placeholder="Dosage" class="med-dosage w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                            <input type="text" placeholder="Duration" class="med-duration w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors" style="background-color: #16A34A; hover:background-color: #15803d;">Save Consultation</button>
+                    <button type="button" onclick="closeModal('consultModal')" class="btn-secondary px-4 py-2.5 rounded-xl text-sm">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div id="patientDetailModal" class="fixed inset-0 bg-black/30 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-4xl mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-display text-xl font-bold" id="detailPatientName">Patient Details</h3>
+                <button onclick="closeModal('patientDetailModal')" class="text-gray-400 hover:text-[#1A1A2E]"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="patientDetailContent">
+                <p class="text-gray-400">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function addPrescriptionField() {
+        const container = document.getElementById('prescriptionsContainer');
+        const row = document.createElement('div');
+        row.className = 'prescription-row grid grid-cols-3 gap-2';
+        row.innerHTML = `
+            <input type="text" placeholder="Medicine name" class="med-name w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+            <input type="text" placeholder="Dosage" class="med-dosage w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+            <input type="text" placeholder="Duration" class="med-duration w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+        `;
+        container.appendChild(row);
+    }
+
+    function showPatientDetail(patientId, patientName) {
+        document.getElementById('detailPatientName').textContent = patientName + ' - Clinical Record';
+        const content = document.getElementById('patientDetailContent');
+        content.innerHTML = '<p class="text-gray-400">Loading predictions...</p>';
+        closeModal('consultModal');
+        document.getElementById('patientDetailModal').classList.remove('hidden');
+
+        fetch('/api/doctor/predictions/' + patientId)
+            .then(r => r.json())
+            .then(predictions => {
+                let html = '<div class="space-y-6">';
+                html += '<h4 class="font-display text-lg font-bold">Prediction History</h4>';
+                if (predictions.length === 0) {
+                    html += '<p class="text-gray-400 text-sm">No predictions recorded.</p>';
+                } else {
+                    html += '<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-[#E8E0D8] text-left">';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Date</th>';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Result</th>';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Probability</th>';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Glucose</th>';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">BMI</th>';
+                    html += '<th class="px-4 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Age</th>';
+                    html += '</tr></thead><tbody>';
+                    predictions.forEach(p => {
+                        const risk = p.prediction == 1 ? '<span class="text-brand-danger font-bold">High</span>' : '<span class="text-brand-emerald font-bold">Low</span>';
+                        html += `<tr class="border-b border-[#E8E0D8]">
+                            <td class="px-4 py-2 text-xs">${p.timestamp || '-'}</td>
+                            <td class="px-4 py-2">${risk}</td>
+                            <td class="px-4 py-2">${(p.probability * 100).toFixed(1)}%</td>
+                            <td class="px-4 py-2">${p.glucose || '-'}</td>
+                            <td class="px-4 py-2">${p.bmi || '-'}</td>
+                            <td class="px-4 py-2">${p.age || '-'}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                }
+
+                html += '<div class="mt-8"><h4 class="font-display text-lg font-bold mb-4">Consultations</h4>';
+                html += '<div id="patientConsultations"><p class="text-gray-400 text-sm">Loading consultations...</p></div></div>';
+                html += '</div>';
+                content.innerHTML = html;
+
+                fetch('/api/doctor/consultations?patient_id=' + patientId)
+                    .then(r => r.json())
+                    .then(consults => {
+                        let chtml = '';
+                        if (consults.length === 0) {
+                            chtml = '<p class="text-gray-400 text-sm">No consultations yet.</p>';
+                        } else {
+                            chtml = '<div class="space-y-4">';
+                            consults.forEach(c => {
+                                const meds = c.prescriptions && c.prescriptions.length > 0
+                                    ? c.prescriptions.map(m => `${m.medicine_name} (${m.dosage}, ${m.duration})`).join('; ')
+                                    : 'None';
+                                chtml += `<div class="border border-[#E8E0D8] rounded-xl p-4">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-2"><span>${c.date}</span></div>
+                                    <p class="text-sm"><strong>Symptoms:</strong> ${c.symptoms || '-'}</p>
+                                    <p class="text-sm"><strong>Diagnosis:</strong> ${c.diagnosis || '-'}</p>
+                                    <p class="text-sm"><strong>Notes:</strong> ${c.notes || '-'}</p>
+                                    <p class="text-sm"><strong>Prescriptions:</strong> ${meds}</p>
+                                </div>`;
+                            });
+                            chtml += '</div>';
+                        }
+                        document.getElementById('patientConsultations').innerHTML = chtml;
+                    })
+                    .catch(() => {
+                        document.getElementById('patientConsultations').innerHTML = '<p class="text-gray-400 text-sm">Error loading consultations.</p>';
+                    });
+            })
+            .catch(() => {
+                content.innerHTML = '<p class="text-brand-danger text-sm">Error loading patient data.</p>';
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active', 'border-brand-success', 'text-brand-success');
+                    b.classList.add('border-transparent', 'text-gray-400');
+                });
+                btn.classList.add('active', 'border-brand-success', 'text-brand-success');
+                btn.classList.remove('border-transparent', 'text-gray-400');
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
+                document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+            });
+        });
+
+        // Set default date
+        document.getElementById('consultDate').value = new Date().toISOString().split('T')[0];
+
+        // Load patients
+        function loadPatients() {
+            fetch('/api/doctor/patients')
+                .then(r => r.json())
+                .then(data => {
+                    const tbody = document.getElementById('patientsTableBody');
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">No patients found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = data.map(p => `<tr class="border-b border-[#E8E0D8] hover:bg-gray-50">
+                        <td class="px-6 py-4 font-mono text-xs">${p.id}</td>
+                        <td class="px-6 py-4 font-medium">${p.username}</td>
+                        <td class="px-6 py-4 text-gray-400">${p.email || '-'}</td>
+                        <td class="px-6 py-4 text-gray-400">${p.phone || '-'}</td>
+                        <td class="px-6 py-4">${p.gender || '-'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold">${p.blood_group || '-'}</span></td>
+                        <td class="px-6 py-4">${p.prediction_count || 0}</td>
+                        <td class="px-6 py-4">
+                            <button onclick="showPatientDetail(${p.id}, '${p.username}')" class="text-brand-accent border border-brand-accent/40 px-3 py-1 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs">
+                                <i class="fa-solid fa-eye mr-1"></i>View
+                            </button>
+                        </td>
+                    </tr>`).join('');
+                    document.getElementById('statPatients').textContent = data.length;
+                })
+                .catch(() => {
+                    document.getElementById('patientsTableBody').innerHTML = '<tr><td colspan="8" class="px-6 py-12 text-center text-gray-400">Error loading patients.</td></tr>';
+                });
+        }
+
+        // Load consultations
+        function loadConsultations() {
+            fetch('/api/doctor/consultations')
+                .then(r => r.json())
+                .then(data => {
+                    const tbody = document.getElementById('consultationsTableBody');
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">No consultations found.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = data.map(c => {
+                        const meds = c.prescriptions && c.prescriptions.length > 0
+                            ? c.prescriptions.map(m => `<span class="inline-block px-2 py-0.5 bg-gray-100 rounded text-xs mr-1 mb-1">${m.medicine_name}</span>`).join('')
+                            : '<span class="text-gray-400 text-xs">None</span>';
+                        return `<tr class="border-b border-[#E8E0D8] hover:bg-gray-50">
+                            <td class="px-6 py-4 text-xs">${c.date}</td>
+                            <td class="px-6 py-4 font-medium">${c.patient_name}</td>
+                            <td class="px-6 py-4 text-gray-400 max-w-[200px] truncate">${c.symptoms || '-'}</td>
+                            <td class="px-6 py-4 text-gray-400 max-w-[200px] truncate">${c.diagnosis || '-'}</td>
+                            <td class="px-6 py-4">${meds}</td>
+                            <td class="px-6 py-4">
+                                <button onclick="showPatientDetail(${c.patient_id}, '${c.patient_name}')" class="text-brand-accent border border-brand-accent/40 px-3 py-1 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs">
+                                    <i class="fa-solid fa-eye mr-1"></i>View
+                                </button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+                    document.getElementById('statConsultations').textContent = data.length;
+                })
+                .catch(() => {
+                    document.getElementById('consultationsTableBody').innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-gray-400">Error loading consultations.</td></tr>';
+                });
+        }
+
+        loadPatients();
+        loadConsultations();
+
+        // Load doctor stats
+        fetch('/api/doctor/stats')
+            .then(r => r.json())
+            .then(stats => {
+                document.getElementById('statPatients').textContent = stats.totalPatients || 0;
+                document.getElementById('statConsultations').textContent = stats.totalConsultations || 0;
+                document.getElementById('statTodayAppointments').textContent = stats.todayAppointments || 0;
+                document.getElementById('statPending').textContent = stats.pendingAppointments || 0;
+            })
+            .catch(() => {});
+
+        // Populate patient dropdown in modal
+        fetch('/api/doctor/patients')
+            .then(r => r.json())
+            .then(data => {
+                const select = document.getElementById('consultPatientId');
+                data.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.username + (p.email ? ' (' + p.email + ')' : '');
+                    select.appendChild(opt);
+                });
+            })
+            .catch(() => {});
+
+        // Open consultation modal
+        document.getElementById('addConsultBtn').addEventListener('click', () => {
+            document.getElementById('consultModal').classList.remove('hidden');
+        });
+
+        // Submit consultation
+        document.getElementById('consultForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const prescriptionRows = document.querySelectorAll('.prescription-row');
+            const prescriptions = [];
+            prescriptionRows.forEach(row => {
+                const name = row.querySelector('.med-name').value.trim();
+                if (name) {
+                    prescriptions.push({
+                        medicine_name: name,
+                        dosage: row.querySelector('.med-dosage').value,
+                        duration: row.querySelector('.med-duration').value
+                    });
+                }
+            });
+            const data = {
+                patient_id: parseInt(document.getElementById('consultPatientId').value),
+                date: document.getElementById('consultDate').value,
+                symptoms: document.getElementById('consultSymptoms').value,
+                diagnosis: document.getElementById('consultDiagnosis').value,
+                notes: document.getElementById('consultNotes').value,
+                prescriptions: prescriptions
+            };
+            fetch('/api/doctor/consultations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    closeModal('consultModal');
+                    document.getElementById('consultForm').reset();
+                    document.getElementById('consultDate').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('prescriptionsContainer').innerHTML = `
+                        <div class="prescription-row grid grid-cols-3 gap-2">
+                            <input type="text" placeholder="Medicine name" class="med-name w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                            <input type="text" placeholder="Dosage" class="med-dosage w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                            <input type="text" placeholder="Duration" class="med-duration w-full bg-white border border-[#D1D5DB] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-accent">
+                        </div>
+                    `;
+                    loadConsultations();
+                }
+            })
+            .catch(() => alert('Failed to create consultation'));
+        });
+    });
+    </script>
+</body>
+</html>

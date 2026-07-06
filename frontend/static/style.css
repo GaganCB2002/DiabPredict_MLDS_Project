@@ -1,0 +1,230 @@
+body {
+    background-color: #FFFFFF;
+    color: #1A1A2E;
+}
+
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #FFFFFF inset !important;
+    -webkit-text-fill-color: #1A1A2E !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+@keyframes scroll-line {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.animate-scroll-line {
+    animation: scroll-line 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.hover-glow { position: relative; transition: color 0.3s ease; }
+.hover-glow::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #2563EB;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.hover-glow:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+.clip-reveal { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
+.scroll-scale-x { transform: scaleX(0); transform-origin: left; }
+.scroll-scale-x.origin-right { transform-origin: right; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+.text-gray-400 { color: #9CA3AF !important; }
+.text-gray-500 { color: #6B7280 !important; }
+.text-gray-600 { color: #4B5563 !important; }
+.placeholder-gray-500::placeholder { color: #6B7280 !important; }
+.placeholder-gray-600::placeholder { color: #4B5563 !important; }
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+.glass-card:hover {
+    box-shadow: 0 8px 40px rgba(37, 99, 235, 0.12);
+}
+
+.btn-primary {
+    background: #2563EB;
+    border: none;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    background: #1D4ED8;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #D1D5DB;
+    color: #4A4A5A;
+    transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+    background: #F3F4F6;
+    border-color: #2563EB;
+    color: #2563EB;
+}
+
+.btn-danger {
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    color: #DC2626;
+    transition: all 0.3s ease;
+}
+.btn-danger:hover {
+    background: #DC2626;
+    color: #FFFFFF;
+}
+
+.card-surface {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+}
+.card-surface:hover {
+    box-shadow: 0 8px 40px rgba(37, 99, 235, 0.10);
+    border-color: rgba(37, 99, 235, 0.2);
+    transform: translateY(-2px);
+}
+
+.gradient-bg {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 50%, #F5F5F4 100%);
+}
+
+.radial-glow {
+    background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05), transparent 70%);
+}
+
+@keyframes float-breathe {
+    0% { transform: translateY(0px) rotateX(0) rotateY(0); }
+    50% { transform: translateY(-3px) rotateX(0.5deg) rotateY(0.5deg); }
+    100% { transform: translateY(0px) rotateX(0) rotateY(0); }
+}
+.animate-float {
+    animation: float-breathe 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+.navbar-blur {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.4s ease;
+}
+
+/* ==========================================================================
+   PREMIUM ANIMATIONS (Added for Scroll Revamp)
+   ========================================================================== */
+
+/* 1. Coding Text Effect */
+@keyframes code-scroll {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+}
+.coding-text-effect {
+    position: absolute;
+    white-space: nowrap;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    color: rgba(37, 99, 235, 0.05); /* Very subtle blue */
+    pointer-events: none;
+    z-index: 0;
+    will-change: transform;
+}
+.coding-text-effect.fast { animation: code-scroll 15s linear infinite; }
+.coding-text-effect.slow { animation: code-scroll 25s linear infinite; }
+.coding-text-effect.reverse { animation: code-scroll 20s linear infinite reverse; }
+
+/* 2. Text Marquee */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.marquee-container {
+    width: 100vw;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 2rem 0;
+    background: linear-gradient(90deg, #FFFFFF 0%, #FAFAFA 50%, #FFFFFF 100%);
+    border-top: 1px solid rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(0,0,0,0.02);
+    display: flex;
+}
+.marquee-content {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+}
+.marquee-text {
+    font-size: 4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(37, 99, 235, 0.1);
+    margin: 0 2rem;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* 3. Button Micro Interactions */
+.btn-magnetic {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.2s ease;
+    will-change: transform;
+}
+.btn-magnetic:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.4);
+}
+
+/* 4. Glass Card Enhanced 3D */
+.glass-card-3d {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+    will-change: transform;
+    transform-style: preserve-3d;
+}
+.glass-card-3d:hover {
+    box-shadow: 0 20px 50px -10px rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+/* 5. Text Reveals */
+.text-blur-reveal {
+    filter: blur(10px);
+    opacity: 0;
+    will-change: filter, opacity, transform;
+}
+.char-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    display: inline-block;
+    will-change: transform, opacity;
+}
