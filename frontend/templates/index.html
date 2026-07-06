@@ -33,68 +33,22 @@
 <body class="bg-[#FFFFFF] text-[#1A1A2E] antialiased overflow-x-hidden selection:bg-brand-accent selection:text-white">
     <div id="authStatus" data-authenticated="{{ current_user.is_authenticated|lower }}"></div>
 
-    <!-- Consent Modal -->
-    <div id="consentOverlay" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-500">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500">
-            <div class="p-8 md:p-10">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-brand-accent/10 flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved text-brand-accent text-lg"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-display text-2xl font-bold tracking-tight">Privacy &amp; Terms</h2>
-                        <p class="text-gray-400 text-sm">Please review before continuing</p>
-                    </div>
-                </div>
-
-                <div class="space-y-5 text-sm text-gray-500 leading-relaxed mb-8">
-                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-file-lines text-brand-accent mt-0.5"></i>
-                            <div>
-                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Terms &amp; Conditions</h4>
-                                <p>By using DiabPredict AI, you agree that this tool is for informational and educational purposes only. It does not provide medical diagnoses, treatment recommendations, or replace professional healthcare consultation. You acknowledge that all predictions are probabilistic estimates based on submitted biometric data.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-cookie text-brand-accent mt-0.5"></i>
-                            <div>
-                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Cookie &amp; Session Policy</h4>
-                                <p>We use essential session cookies to maintain your login state and ensure platform security. No third-party tracking cookies are used. Your session data is stored temporarily and never shared with third parties.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-lock text-brand-accent mt-0.5"></i>
-                            <div>
-                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Data Privacy</h4>
-                                <p>Biometric data you submit is stored securely in compliance with data protection regulations. Your information is used solely for generating predictions and improving model accuracy. You may request deletion of your data at any time by contacting the administrator.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <form id="consentForm" class="space-y-5">
-                    <label class="flex items-start gap-3 cursor-pointer group">
-                        <input type="checkbox" id="consentCheckbox" class="mt-0.5 w-5 h-5 rounded-lg border-2 border-gray-300 text-brand-accent focus:ring-brand-accent/30 focus:ring-offset-0 cursor-pointer">
-                        <span class="text-sm text-gray-600 group-hover:text-[#1A1A2E] transition-colors select-none">
-                            I have read and agree to the <strong class="text-[#1A1A2E]">Terms &amp; Conditions</strong>, <strong class="text-[#1A1A2E]">Cookie Policy</strong>, and <strong class="text-[#1A1A2E]">Data Privacy</strong> terms outlined above.
-                        </span>
-                    </label>
-
-                    <button type="submit" id="consentSubmitBtn" disabled
-                        class="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-gray-200 text-gray-400 cursor-not-allowed">
-                        <i class="fa-solid fa-check mr-2"></i>Accept &amp; Continue
-                    </button>
-                </form>
-
-                <p class="text-xs text-gray-400 text-center mt-5">You must accept the terms before using this platform. This notice appears once per device.</p>
-            </div>
+    <!-- Consent Banner -->
+    <div id="consentOverlay" class="fixed bottom-6 right-6 z-[100] max-w-sm bg-white/95 backdrop-blur-md border border-[#E8E0D8] rounded-2xl shadow-2xl p-6 transition-all duration-500 translate-y-full opacity-0 pointer-events-none">
+        <div class="flex items-center gap-3 mb-3">
+            <i class="fa-solid fa-cookie-bite text-brand-accent text-lg"></i>
+            <h3 class="font-display font-bold text-lg text-[#1A1A2E]">Privacy &amp; Terms</h3>
+        </div>
+        <p class="text-sm text-gray-500 leading-relaxed mb-5">
+            By using DiabPredict AI, you agree to our Terms &amp; Conditions. We use essential cookies to ensure platform security, and we are saving all details of yours securely.
+        </p>
+        <div class="flex gap-3">
+            <button id="consentAcceptBtn" class="flex-1 bg-brand-accent hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">
+                Accept
+            </button>
+            <button id="consentDeclineBtn" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-gray-200">
+                Decline
+            </button>
         </div>
     </div>
 

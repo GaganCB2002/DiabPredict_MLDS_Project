@@ -1,5 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // 0. Cookie Consent Toast
+    const overlay = document.getElementById('consentOverlay');
+    const acceptBtn = document.getElementById('consentAcceptBtn');
+    const declineBtn = document.getElementById('consentDeclineBtn');
+
+    if (overlay) {
+        // Check local storage
+        if (localStorage.getItem('cookieConsent')) {
+            overlay.remove();
+        } else {
+            // Animate in after a short delay
+            setTimeout(() => {
+                overlay.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+            }, 1000);
+            
+            const handleConsent = (status) => {
+                localStorage.setItem('cookieConsent', status);
+                overlay.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+                setTimeout(() => overlay.remove(), 500);
+            };
+
+            if (acceptBtn) acceptBtn.addEventListener('click', () => handleConsent('accepted'));
+            if (declineBtn) declineBtn.addEventListener('click', () => handleConsent('declined'));
+        }
+    }
+
     // 1. Lenis Smooth Scroll
     let lenis = null;
     try {
