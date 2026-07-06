@@ -153,8 +153,8 @@ input[type=number]::-webkit-outer-spin-button {
     position: absolute;
     white-space: nowrap;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.8rem;
-    color: rgba(37, 99, 235, 0.05); /* Very subtle blue */
+    font-size: 1rem; /* Increased size */
+    color: rgba(37, 99, 235, 0.25); /* Increased visibility */
     pointer-events: none;
     z-index: 0;
     will-change: transform;
@@ -189,7 +189,7 @@ input[type=number]::-webkit-outer-spin-button {
     font-weight: 800;
     text-transform: uppercase;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(37, 99, 235, 0.1);
+    -webkit-text-stroke: 2px rgba(37, 99, 235, 0.4); /* Increased opacity and thickness for visibility */
     margin: 0 2rem;
     font-family: 'Space Grotesk', sans-serif;
     letter-spacing: -0.02em;
