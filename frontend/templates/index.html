@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DiabPredict AI - Medical Intelligence Platform</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -32,10 +33,78 @@
 <body class="bg-[#FFFFFF] text-[#1A1A2E] antialiased overflow-x-hidden selection:bg-brand-accent selection:text-white">
     <div id="authStatus" data-authenticated="{{ current_user.is_authenticated|lower }}"></div>
 
+    <!-- Consent Modal -->
+    <div id="consentOverlay" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-500">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500">
+            <div class="p-8 md:p-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-brand-accent/10 flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-brand-accent text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-display text-2xl font-bold tracking-tight">Privacy &amp; Terms</h2>
+                        <p class="text-gray-400 text-sm">Please review before continuing</p>
+                    </div>
+                </div>
+
+                <div class="space-y-5 text-sm text-gray-500 leading-relaxed mb-8">
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-file-lines text-brand-accent mt-0.5"></i>
+                            <div>
+                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Terms &amp; Conditions</h4>
+                                <p>By using DiabPredict AI, you agree that this tool is for informational and educational purposes only. It does not provide medical diagnoses, treatment recommendations, or replace professional healthcare consultation. You acknowledge that all predictions are probabilistic estimates based on submitted biometric data.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-cookie text-brand-accent mt-0.5"></i>
+                            <div>
+                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Cookie &amp; Session Policy</h4>
+                                <p>We use essential session cookies to maintain your login state and ensure platform security. No third-party tracking cookies are used. Your session data is stored temporarily and never shared with third parties.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-lock text-brand-accent mt-0.5"></i>
+                            <div>
+                                <h4 class="font-semibold text-[#1A1A2E] mb-1">Data Privacy</h4>
+                                <p>Biometric data you submit is stored securely in compliance with data protection regulations. Your information is used solely for generating predictions and improving model accuracy. You may request deletion of your data at any time by contacting the administrator.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="consentForm" class="space-y-5">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <input type="checkbox" id="consentCheckbox" class="mt-0.5 w-5 h-5 rounded-lg border-2 border-gray-300 text-brand-accent focus:ring-brand-accent/30 focus:ring-offset-0 cursor-pointer">
+                        <span class="text-sm text-gray-600 group-hover:text-[#1A1A2E] transition-colors select-none">
+                            I have read and agree to the <strong class="text-[#1A1A2E]">Terms &amp; Conditions</strong>, <strong class="text-[#1A1A2E]">Cookie Policy</strong>, and <strong class="text-[#1A1A2E]">Data Privacy</strong> terms outlined above.
+                        </span>
+                    </label>
+
+                    <button type="submit" id="consentSubmitBtn" disabled
+                        class="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-gray-200 text-gray-400 cursor-not-allowed">
+                        <i class="fa-solid fa-check mr-2"></i>Accept &amp; Continue
+                    </button>
+                </form>
+
+                <p class="text-xs text-gray-400 text-center mt-5">You must accept the terms before using this platform. This notice appears once per device.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full z-50 pt-6 px-8 md:px-16">
         <div class="flex flex-col md:flex-row justify-between items-center max-w-screen-2xl mx-auto">
-            <div class="font-display font-bold tracking-tight text-xl mb-4 md:mb-0">DIABPREDICT <span class="text-brand-accent">AI</span></div>
+            <div class="font-display font-bold tracking-tight text-xl mb-4 md:mb-0 flex items-center gap-3">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="DiabPredict Logo" class="w-8 h-8 object-contain">
+                DIABPREDICT <span class="text-brand-accent">AI</span>
+            </div>
             <div class="flex flex-wrap items-center justify-center gap-4 font-sans text-[10px] sm:text-xs tracking-widest uppercase">
                 <a href="#overview" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Overview</a>
                 <a href="#workflow" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Workflow</a>
