@@ -158,11 +158,8 @@ input[type=number]::-webkit-outer-spin-button {
     pointer-events: none;
     z-index: 0;
     will-change: transform;
+    /* CSS animation removed: now completely tied to GSAP scroll scrub */
 }
-.coding-text-effect.fast { animation: code-scroll 15s linear infinite; }
-.coding-text-effect.slow { animation: code-scroll 25s linear infinite; }
-.coding-text-effect.reverse { animation: code-scroll 20s linear infinite reverse; }
-
 /* 2. Text Marquee */
 @keyframes marquee {
     0% { transform: translateX(0); }

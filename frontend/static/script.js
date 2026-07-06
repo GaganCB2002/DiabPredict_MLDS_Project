@@ -39,18 +39,31 @@ document.addEventListener('DOMContentLoaded', () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            const particleCount = 800;
+            const particleCount = 2000;
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
 
-            const color1 = new THREE.Color(0x2563EB);
-            const color2 = new THREE.Color(0x0891B2);
+            const color1 = new THREE.Color(0x2563EB); // Blue
+            const color2 = new THREE.Color(0x0891B2); // Cyan
 
             for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] = (Math.random() - 0.5) * 40;
-                positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
-                positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+                const t = i * 0.1; // Frequency of twist
+                const r = 4 + (Math.random() * 0.5 - 0.25); // Radius with slight organic noise
+                const yPos = (i - particleCount / 2) * 0.03; // Vertical spread
+                
+                if (i % 2 === 0) {
+                    // Strand 1
+                    positions[i * 3] = r * Math.cos(t);
+                    positions[i * 3 + 1] = yPos;
+                    positions[i * 3 + 2] = r * Math.sin(t);
+                } else {
+                    // Strand 2
+                    positions[i * 3] = r * Math.cos(t + Math.PI);
+                    positions[i * 3 + 1] = yPos;
+                    positions[i * 3 + 2] = r * Math.sin(t + Math.PI);
+                }
+
                 const mixedColor = color1.clone().lerp(color2, Math.random());
                 colors[i * 3] = mixedColor.r;
                 colors[i * 3 + 1] = mixedColor.g;
@@ -79,9 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tick = () => {
                 const time = Date.now() * 0.001;
-                particleSystem.rotation.y += 0.0004; /* Slower */
-                particleSystem.rotation.x += 0.0002;
-                particleSystem.position.y = Math.sin(time) * 0.2;
+                
+                // DNA Rotation tied strongly to Scroll Position
+                particleSystem.rotation.y = (time * 0.1) + (scrollY * 0.005);
+                particleSystem.rotation.x = 0; // Keep helix upright
                 
                 // Advanced Camera Scroll Reactions
                 const targetY = 5 - (scrollY * 0.003);
@@ -90,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 camera.position.y += (targetY - camera.position.y) * 0.03;
                 camera.position.z += (targetZ - camera.position.z) * 0.03;
-                camera.position.x += (Math.sin(scrollY * 0.0005) * 2 - camera.position.x) * 0.03;
                 camera.rotation.x = -tiltX;
                 camera.lookAt(0, 0, 0);
                 
@@ -145,6 +158,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         opacity: 1, y: 0, filter: "blur(0px)"
                     }
                 );
+            });
+
+            // Scroll-based Marquee and Coding Text Movement (Scrubbing)
+            gsap.utils.toArray(".coding-text-effect:not(.reverse)").forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 1 },
+                    xPercent: -50,
+                    ease: "none"
+                });
+            });
+
+            gsap.utils.toArray(".coding-text-effect.reverse").forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 1 },
+                    xPercent: 50,
+                    ease: "none"
+                });
             });
 
             gsap.utils.toArray(".scroll-fade-up").forEach(el => {
@@ -348,6 +378,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (formError) formError.classList.add('hidden');
 
+            const authEl = document.getElementById('authStatus');
+            if (authEl && authEl.dataset.authenticated !== 'true') {
+                window.location.href = '/login?next=/';
+                return;
+            }
+
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
             const submitBtn = document.getElementById('submitBtn');
@@ -361,6 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const inputData = {};
             fd.forEach((v, k) => { if (k !== 'name') inputData[k] = parseFloat(v); });
 
+            const name = document.getElementById('name').value.trim();
+
             fetch('/predict', {
                 method: 'POST',
                 body: fd
@@ -368,7 +406,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(r => r.json())
             .then(res => {
                 if (res.error) throw new Error(res.error);
-                showResult(res, inputData);
+                // Fetch previous results for same patient
+                fetch('/api/predictions/by-name?name=' + encodeURIComponent(name))
+                    .then(r2 => r2.json())
+                    .then(history => {
+                        showResult(res, inputData, history);
+                    })
+                    .catch(() => {
+                        showResult(res, inputData, []);
+                    });
                 btnText.textContent = 'Execute Analysis';
                 btnIcon.className = 'fa-solid fa-arrow-right';
                 submitBtn.style.pointerEvents = '';
@@ -387,7 +433,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const showResult = (res, inputData) => {
+    const NORMAL_RANGES = {
+        glucose: { min: 70, max: 100, unit: 'mg/dL', label: 'Glucose', assess: (v) => v <= 100 ? 'Normal fasting glucose.' : v <= 125 ? 'Pre-diabetic range. Monitor closely.' : 'Elevated — diabetic range. Consult physician.' },
+        bmi: { min: 18.5, max: 24.9, unit: '', label: 'BMI', assess: (v) => v < 18.5 ? 'Underweight.' : v <= 24.9 ? 'Healthy weight range.' : v <= 29.9 ? 'Overweight. Increased diabetes risk.' : 'Obese. High diabetes risk.' },
+        age: { min: 0, max: 120, unit: 'yrs', label: 'Age', assess: (v) => v < 30 ? 'Low age-related risk.' : v < 45 ? 'Moderate age-related risk.' : v < 60 ? 'Elevated age-related risk.' : 'High age-related risk. Regular screening advised.' },
+        bloodPressure: { min: 60, max: 80, unit: 'mmHg', label: 'Blood Pressure', assess: (v) => v <= 80 ? 'Normal diastolic pressure.' : v <= 90 ? 'Elevated. Monitor regularly.' : 'Hypertensive. Medical evaluation recommended.' },
+        insulin: { min: 16, max: 166, unit: 'IU/mL', label: 'Insulin', assess: (v) => v >= 16 && v <= 166 ? 'Normal insulin level.' : v < 16 ? 'Low insulin production. May indicate pancreatic dysfunction.' : 'Elevated insulin. Possible insulin resistance.' },
+        skinThickness: { min: 10, max: 40, unit: 'mm', label: 'Skin Thickness', assess: (v) => v >= 10 && v <= 40 ? 'Within typical range.' : v < 10 ? 'Below average.' : 'Above average body fat indicator.' },
+        pregnancies: { min: 0, max: 20, unit: '', label: 'Pregnancies', assess: (v) => v === 0 ? 'No pregnancy history.' : v <= 3 ? 'Low parity.' : v <= 6 ? 'Moderate parity. Monitor gestational diabetes history.' : 'High parity. Elevated risk.' },
+        diabetesPedigreeFunction: { min: 0, max: 0.5, unit: '', label: 'Pedigree Func.', assess: (v) => v <= 0.5 ? 'Low genetic predisposition.' : v <= 0.8 ? 'Moderate genetic risk factor.' : 'Strong genetic predisposition to diabetes.' }
+    };
+
+    const FIELD_MAP = {
+        glucose: 'glucose', bmi: 'bmi', age: 'age', bloodPressure: 'bloodPressure',
+        insulin: 'insulin', skinThickness: 'skinThickness',
+        pregnancies: 'pregnancies', diabetesPedigreeFunction: 'diabetesPedigreeFunction'
+    };
+
+    function getStatusClass(val, min, max) {
+        if (val >= min && val <= max) return 'text-brand-emerald';
+        if (val < min) return 'text-brand-warning';
+        return 'text-brand-danger';
+    }
+
+    function getStatusLabel(val, min, max) {
+        if (val >= min && val <= max) return 'Normal';
+        if (val < min) return 'Below';
+        return 'Above';
+    }
+
+    function renderDetailedMetrics(res, history) {
+        const container = document.getElementById('detailedMetrics');
+        const tbody = document.getElementById('metricsDetailBody');
+        container.classList.remove('hidden');
+        let html = '';
+        for (const [key, field] of Object.entries(FIELD_MAP)) {
+            const range = NORMAL_RANGES[key];
+            const val = parseFloat(res[field]) || 0;
+            const statusClass = getStatusClass(val, range.min, range.max);
+            const statusLabel = getStatusLabel(val, range.min, range.max);
+            html += `<tr class="border-b border-[#E8E0D8]">
+                <td class="px-4 py-3 font-medium">${range.label}</td>
+                <td class="px-4 py-3 font-bold tabular-nums">${val}${range.unit ? ' ' + range.unit : ''}</td>
+                <td class="px-4 py-3 text-gray-400">${range.min}${range.max ? ' – ' + range.max : '+'}${range.unit ? ' ' + range.unit : ''}</td>
+                <td class="px-4 py-3"><span class="${statusClass} font-bold text-xs px-2 py-1 rounded-full ${statusClass === 'text-brand-emerald' ? 'bg-emerald-50' : statusClass === 'text-brand-warning' ? 'bg-yellow-50' : 'bg-red-50'}">${statusLabel}</span></td>
+                <td class="px-4 py-3 text-gray-400 text-xs max-w-[200px]">${range.assess(val)}</td>
+            </tr>`;
+        }
+        tbody.innerHTML = html;
+    }
+
+    function renderHistoryComparison(res, history) {
+        const container = document.getElementById('historyComparison');
+        const tbody = document.getElementById('historyComparisonBody');
+        const nameSpan = document.getElementById('historyPatientName');
+        // Filter out the current prediction and any null entries
+        const prev = (history || []).filter(p => p.id !== res.id);
+        if (prev.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+        container.classList.remove('hidden');
+        nameSpan.textContent = res.name || 'Patient';
+        let html = '';
+        prev.slice(0, 10).forEach(p => {
+            const isHigh = p.prediction == 1;
+            const prob = (p.probability * 100).toFixed(1);
+            const riskClass = isHigh ? 'text-brand-danger' : 'text-brand-emerald';
+            const riskLabel = isHigh ? 'HIGH' : 'LOW';
+            html += `<tr class="border-b border-[#E8E0D8]">
+                <td class="px-4 py-3 text-xs">${p.timestamp ? p.timestamp.split(' ')[0] : '-'}</td>
+                <td class="px-4 py-3"><span class="${riskClass} font-bold text-xs">${riskLabel}</span></td>
+                <td class="px-4 py-3 tabular-nums ${riskClass}">${prob}%</td>
+                <td class="px-4 py-3">${p.glucose || '-'}</td>
+                <td class="px-4 py-3">${p.bmi || '-'}</td>
+                <td class="px-4 py-3">${p.bloodPressure || '-'}</td>
+                <td class="px-4 py-3">${p.insulin || '-'}</td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    }
+
+    const showResult = (res, inputData, history) => {
         const resultArea = document.getElementById('resultArea');
         const conf = document.getElementById('resultConfidence');
         const verdict = document.getElementById('resultVerdict');
@@ -405,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
             verdict.style.color = isHigh ? '#DC2626' : '#0891B2';
             msg.textContent = res.message;
             renderRadar(inputData, isHigh);
+            renderDetailedMetrics(res, history || []);
+            renderHistoryComparison(res, history || []);
             return;
         }
         gsap.to("#predictionForm > div", {
@@ -427,6 +556,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 verdict.style.color = isHigh ? '#DC2626' : '#0891B2';
                 msg.textContent = res.message;
                 renderRadar(inputData, isHigh);
+                renderDetailedMetrics(res, history || []);
+                renderHistoryComparison(res, history || []);
             }
         });
     };

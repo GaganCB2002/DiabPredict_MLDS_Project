@@ -85,47 +85,101 @@
                 </div>
             </div>
             <div class="card-surface p-8">
-                <h3 class="font-display text-lg font-bold mb-6">Clinical Metrics</h3>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Glucose</span>
-                        <span class="font-bold">{{ result.glucose }} mg/dL</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">BMI</span>
-                        <span class="font-bold">{{ result.bmi }}</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Age</span>
-                        <span class="font-bold">{{ result.age }} yrs</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Blood Pressure</span>
-                        <span class="font-bold">{{ result.bloodPressure }} mmHg</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Insulin</span>
-                        <span class="font-bold">{{ result.insulin }} IU/mL</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Skin Thickness</span>
-                        <span class="font-bold">{{ result.skinThickness }} mm</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2 border-b border-[#E8E0D8]">
-                        <span class="text-gray-400">Pregnancies</span>
-                        <span class="font-bold">{{ result.pregnancies }}</span>
-                    </div>
-                    <div class="flex justify-between items-center py-2">
-                        <span class="text-gray-400">Pedigree Function</span>
-                        <span class="font-bold">{{ result.diabetesPedigreeFunction }}</span>
-                    </div>
+                <h3 class="font-display text-lg font-bold mb-6">Clinical Metrics &amp; Normal Range Comparison</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[#E8E0D8] text-left">
+                                <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Metric</th>
+                                <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Patient Value</th>
+                                <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Normal Range</th>
+                                <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set metrics = [
+                                ('Glucose', result.glucose, 70, 100, 'mg/dL'),
+                                ('BMI', result.bmi, 18.5, 24.9, ''),
+                                ('Age', result.age, 0, 120, 'yrs'),
+                                ('Blood Pressure', result.bloodPressure, 60, 80, 'mmHg'),
+                                ('Insulin', result.insulin, 16, 166, 'IU/mL'),
+                                ('Skin Thickness', result.skinThickness, 10, 40, 'mm'),
+                                ('Pregnancies', result.pregnancies, 0, 20, ''),
+                                ('Pedigree Func.', result.diabetesPedigreeFunction, 0, 0.5, '')
+                            ] %}
+                            {% for label, val, lo, hi, unit in metrics %}
+                            {% set num_val = val|float %}
+                            {% set normal = num_val >= lo and num_val <= hi %}
+                            {% set status = 'Normal' if normal else ('Below' if num_val < lo else 'Above') %}
+                            <tr class="border-b border-[#E8E0D8]">
+                                <td class="px-3 py-3 font-medium">{{ label }}</td>
+                                <td class="px-3 py-3 font-bold tabular-nums">{{ val }}{% if unit %} {{ unit }}{% endif %}</td>
+                                <td class="px-3 py-3 text-gray-400">{{ lo }}{% if hi %} – {{ hi }}{% endif %}{% if unit %} {{ unit }}{% endif %}</td>
+                                <td class="px-3 py-3"><span class="font-bold text-xs px-2 py-1 rounded-full {% if normal %}text-brand-emerald bg-emerald-50{% elif num_val < lo %}text-brand-warning bg-yellow-50{% else %}text-brand-danger bg-red-50{% endif %}">{{ status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- Health Summary -->
+        <!-- Per-Metric Health Assessment -->
         <div class="card-surface p-8 mb-6">
-            <h3 class="font-display text-lg font-bold mb-4">Health Summary &amp; Recommendations</h3>
+            <h3 class="font-display text-lg font-bold mb-4">Per-Metric Health Assessment</h3>
+            <div class="font-sans text-gray-400 font-light leading-relaxed space-y-4">
+                {% set num_glucose = result.glucose|float %}
+                {% if num_glucose <= 100 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-brand-emerald mt-0.5"></i><span><strong class="text-[#1A1A2E]">Glucose ({{ num_glucose }} mg/dL):</strong> Normal fasting glucose. No glycemic concern.</span></div>
+                {% elif num_glucose <= 125 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">Glucose ({{ num_glucose }} mg/dL):</strong> Pre-diabetic range (100–125 mg/dL). Monitor HbA1c and consider oral glucose tolerance test.</span></div>
+                {% else %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-circle-exclamation text-brand-danger mt-0.5"></i><span><strong class="text-[#1A1A2E]">Glucose ({{ num_glucose }} mg/dL):</strong> Diabetic range (>125 mg/dL). Immediate metabolic panel and HbA1c testing required.</span></div>
+                {% endif %}
+
+                {% set num_bmi = result.bmi|float %}
+                {% if num_bmi < 18.5 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">BMI ({{ num_bmi }}):</strong> Underweight. May indicate nutritional deficiency.</span></div>
+                {% elif num_bmi <= 24.9 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-brand-emerald mt-0.5"></i><span><strong class="text-[#1A1A2E]">BMI ({{ num_bmi }}):</strong> Healthy weight range (18.5–24.9). Maintain current diet and exercise.</span></div>
+                {% elif num_bmi <= 29.9 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">BMI ({{ num_bmi }}):</strong> Overweight (25–29.9). Increased risk of insulin resistance.</span></div>
+                {% else %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-circle-exclamation text-brand-danger mt-0.5"></i><span><strong class="text-[#1A1A2E]">BMI ({{ num_bmi }}):</strong> Obese (≥30). High diabetes risk. Weight management program recommended.</span></div>
+                {% endif %}
+
+                {% set num_bp = result.bloodPressure|float %}
+                {% if num_bp <= 80 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-brand-emerald mt-0.5"></i><span><strong class="text-[#1A1A2E]">Blood Pressure ({{ num_bp }} mmHg):</strong> Normal diastolic pressure.</span></div>
+                {% elif num_bp <= 90 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">Blood Pressure ({{ num_bp }} mmHg):</strong> Elevated (80–90 mmHg). Monitor regularly.</span></div>
+                {% else %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-circle-exclamation text-brand-danger mt-0.5"></i><span><strong class="text-[#1A1A2E]">Blood Pressure ({{ num_bp }} mmHg):</strong> Hypertensive (>90 mmHg). Medical evaluation recommended.</span></div>
+                {% endif %}
+
+                {% set num_ins = result.insulin|float %}
+                {% if num_ins >= 16 and num_ins <= 166 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-brand-emerald mt-0.5"></i><span><strong class="text-[#1A1A2E]">Insulin ({{ num_ins }} IU/mL):</strong> Within normal range (16–166 IU/mL).</span></div>
+                {% elif num_ins < 16 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">Insulin ({{ num_ins }} IU/mL):</strong> Below normal. Possible pancreatic dysfunction.</span></div>
+                {% else %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-circle-exclamation text-brand-danger mt-0.5"></i><span><strong class="text-[#1A1A2E]">Insulin ({{ num_ins }} IU/mL):</strong> Elevated. May indicate insulin resistance.</span></div>
+                {% endif %}
+
+                {% set num_dpf = result.diabetesPedigreeFunction|float %}
+                {% if num_dpf <= 0.5 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-brand-emerald mt-0.5"></i><span><strong class="text-[#1A1A2E]">Pedigree Function ({{ num_dpf }}):</strong> Low genetic predisposition to diabetes.</span></div>
+                {% elif num_dpf <= 0.8 %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-exclamation-triangle text-brand-warning mt-0.5"></i><span><strong class="text-[#1A1A2E]">Pedigree Function ({{ num_dpf }}):</strong> Moderate genetic risk factor.</span></div>
+                {% else %}
+                <div class="flex items-start gap-3"><i class="fa-solid fa-circle-exclamation text-brand-danger mt-0.5"></i><span><strong class="text-[#1A1A2E]">Pedigree Function ({{ num_dpf }}):</strong> Strong genetic predisposition to diabetes.</span></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Overall Recommendations -->
+        <div class="card-surface p-8 mb-6">
+            <h3 class="font-display text-lg font-bold mb-4">Overall Recommendations</h3>
             <div class="font-sans text-gray-400 font-light leading-relaxed space-y-3">
                 {% if result.prediction == 1 %}
                 <p>This patient shows elevated risk indicators for diabetes mellitus. The following clinical actions are recommended:</p>
@@ -146,6 +200,42 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Previous Results Comparison -->
+        {% if history and history|length > 0 %}
+        <div class="card-surface p-8 mb-6">
+            <h3 class="font-display text-lg font-bold mb-6">Previous Results Comparison</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-[#E8E0D8] text-left">
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Date</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Risk</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Probability</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Glucose</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">BMI</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">BP</th>
+                            <th class="px-3 py-2 text-gray-400 font-medium tracking-widest uppercase text-xs">Insulin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in history %}
+                        {% set h_high = h.prediction == 1 %}
+                        <tr class="border-b border-[#E8E0D8]">
+                            <td class="px-3 py-3 text-xs text-gray-400">{{ h.timestamp.split(' ')[0] if h.timestamp else '-' }}</td>
+                            <td class="px-3 py-3"><span class="font-bold text-xs {{ 'text-brand-danger' if h_high else 'text-brand-emerald' }}">{{ 'HIGH' if h_high else 'LOW' }}</span></td>
+                            <td class="px-3 py-3 tabular-nums {{ 'text-brand-danger' if h_high else 'text-brand-emerald' }}">{{ "%.1f"|format(h.probability * 100) }}%</td>
+                            <td class="px-3 py-3">{{ h.glucose if h.glucose is not none else '-' }}</td>
+                            <td class="px-3 py-3">{{ h.bmi if h.bmi is not none else '-' }}</td>
+                            <td class="px-3 py-3">{{ h.bloodPressure if h.bloodPressure is not none else '-' }}</td>
+                            <td class="px-3 py-3">{{ h.insulin if h.insulin is not none else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Footer -->
         <div class="text-center text-xs text-gray-500 mt-12 pt-6 border-t border-[#E8E0D8]">
@@ -216,23 +306,26 @@
         });
 
         function exportCSV() {
-            const headers = ['Metric', 'Value'];
-            const rows = [
-                ['Name', '{{ result.name }}'],
-                ['Prediction', isHigh ? 'High Risk' : 'Low Risk'],
-                ['Probability', prob.toFixed(1) + '%'],
-                ['Glucose', '{{ result.glucose }} mg/dL'],
-                ['BMI', '{{ result.bmi }}'],
-                ['Age', '{{ result.age }} yrs'],
-                ['Blood Pressure', '{{ result.bloodPressure }} mmHg'],
-                ['Insulin', '{{ result.insulin }} IU/mL'],
-                ['Skin Thickness', '{{ result.skinThickness }} mm'],
-                ['Pregnancies', '{{ result.pregnancies }}'],
-                ['Pedigree Function', '{{ result.diabetesPedigreeFunction }}'],
-                ['Timestamp', '{{ result.timestamp }}']
+            const headers = ['Category', 'Metric', 'Patient Value', 'Normal Range', 'Status', 'Assessment'];
+            const metrics = [
+                ['Biometric', 'Glucose (mg/dL)', '{{ result.glucose }}', '70 – 100', '{{ "Normal" if result.glucose|float >= 70 and result.glucose|float <= 100 else ("Below" if result.glucose|float < 70 else "Above") }}', '{{ "Normal fasting glucose." if result.glucose|float <= 100 else ("Pre-diabetic range. Monitor closely." if result.glucose|float <= 125 else "Diabetic range. Consult physician.") }}'],
+                ['Biometric', 'BMI', '{{ result.bmi }}', '18.5 – 24.9', '{{ "Normal" if result.bmi|float >= 18.5 and result.bmi|float <= 24.9 else ("Below" if result.bmi|float < 18.5 else "Above") }}', '{{ "Healthy weight." if result.bmi|float >= 18.5 and result.bmi|float <= 24.9 else ("Underweight." if result.bmi|float < 18.5 else ("Overweight." if result.bmi|float <= 29.9 else "Obese. High risk.")) }}'],
+                ['Biometric', 'Age (yrs)', '{{ result.age }}', '–', '–', '{{ "Low" if result.age|float < 30 else "Moderate" if result.age|float < 45 else "Elevated" if result.age|float < 60 else "High" }} age-related risk.'],
+                ['Biometric', 'Blood Pressure (mmHg)', '{{ result.bloodPressure }}', '60 – 80', '{{ "Normal" if result.bloodPressure|float <= 80 else ("Elevated" if result.bloodPressure|float <= 90 else "High") }}', '{{ "Normal." if result.bloodPressure|float <= 80 else ("Elevated. Monitor." if result.bloodPressure|float <= 90 else "Hypertensive. Medical evaluation needed.") }}'],
+                ['Biometric', 'Insulin (IU/mL)', '{{ result.insulin }}', '16 – 166', '{{ "Normal" if result.insulin|float >= 16 and result.insulin|float <= 166 else ("Below" if result.insulin|float < 16 else "Above") }}', '{{ "Normal." if result.insulin|float >= 16 and result.insulin|float <= 166 else ("Low. Possible pancreatic dysfunction." if result.insulin|float < 16 else "Elevated. Possible insulin resistance.") }}'],
+                ['Biometric', 'Pedigree Func.', '{{ result.diabetesPedigreeFunction }}', '0 – 0.5', '{{ "Normal" if result.diabetesPedigreeFunction|float <= 0.5 else ("Moderate" if result.diabetesPedigreeFunction|float <= 0.8 else "High") }}', '{{ "Low genetic risk." if result.diabetesPedigreeFunction|float <= 0.5 else ("Moderate genetic risk." if result.diabetesPedigreeFunction|float <= 0.8 else "Strong genetic predisposition.") }}']
             ];
             let csv = headers.join(',') + '\n';
-            rows.forEach(r => { csv += r.join(',') + '\n'; });
+            metrics.forEach(r => { csv += r.join(',') + '\n'; });
+            csv += '\nPrediction,Probability,Message\n';
+            csv += '{{ "High Risk" if result.prediction == 1 else "Low Risk" }},' + prob.toFixed(1) + '%,{{ result.message }}\n';
+            {% if history and history|length > 0 %}
+            csv += '\nPrevious Results\n';
+            csv += 'Date,Risk,Probability,Glucose,BMI,BP,Insulin\n';
+            {% for h in history %}
+            csv += '{{ h.timestamp.split(" ")[0] if h.timestamp else "-" }},{{ "HIGH" if h.prediction == 1 else "LOW" }},{{ "%.1f"|format(h.probability * 100) }}%,{{ h.glucose if h.glucose is not none else "-" }},{{ h.bmi if h.bmi is not none else "-" }},{{ h.bloodPressure if h.bloodPressure is not none else "-" }},{{ h.insulin if h.insulin is not none else "-" }}\n';
+            {% endfor %}
+            {% endif %}
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

@@ -30,6 +30,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-[#FFFFFF] text-[#1A1A2E] antialiased overflow-x-hidden selection:bg-brand-accent selection:text-white">
+    <div id="authStatus" data-authenticated="{{ current_user.is_authenticated|lower }}"></div>
 
     <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
     <div class="fixed inset-0 bg-gradient-to-b from-transparent via-white/60 to-white pointer-events-none -z-10"></div>
@@ -434,6 +435,44 @@
                                 </div>
                                 <div class="w-full h-[300px]">
                                     <canvas id="radarChart"></canvas>
+                                </div>
+                            </div>
+                            <!-- Detailed Metrics with Normal Ranges -->
+                            <div id="detailedMetrics" class="card-surface p-8 mb-6 hidden">
+                                <h3 class="font-display text-xl font-bold mb-6">Biometric Assessment</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-[#E8E0D8] text-left">
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Metric</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Your Value</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Normal Range</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Status</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Assessment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="metricsDetailBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Previous Results Comparison -->
+                            <div id="historyComparison" class="card-surface p-8 mb-6 hidden">
+                                <h3 class="font-display text-xl font-bold mb-6">Previous Results for <span id="historyPatientName" class="text-brand-accent"></span></h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="border-b border-[#E8E0D8] text-left">
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Date</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Risk</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Probability</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Glucose</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">BMI</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">BP</th>
+                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Insulin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historyComparisonBody"></tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

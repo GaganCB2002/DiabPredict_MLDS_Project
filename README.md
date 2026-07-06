@@ -232,6 +232,38 @@ Browser → GET http://127.0.0.1:5000/
 
 ---
 
+### 3.5 Cinematic UI & Animation Architecture (Three.js & GSAP)
+
+DiabPredict AI features an award-winning cinematic UI built to run at 60 FPS using GPU acceleration.
+
+```mermaid
+sequenceDiagram
+    participant U as User (Mouse/Trackpad)
+    participant L as Lenis (Smooth Scroll)
+    participant G as GSAP ScrollTrigger
+    participant T as Three.js WebGL
+
+    U->>L: Scrolls Down Page
+    L-->>G: Emits Scroll Event (Scrub Progress)
+    L-->>T: Updates Global ScrollY Variable
+    
+    rect rgb(240, 248, 255)
+    Note over G: CSS & DOM Animations
+    G->>G: Moves background coding text (Right to Left)
+    G->>G: Reverse text marquee strips
+    G->>G: Tilts Glass Cards dynamically (X/Y axes)
+    G->>G: Reverses entrance animations cleanly when scrolling up
+    end
+    
+    rect rgb(230, 250, 240)
+    Note over T: 3D DNA Helix Pipeline
+    T->>T: Evaluates parametric equations
+    T->>T: Rotates Double Helix strictly tied to ScrollY
+    T->>T: Tilts and Zooms 3D Camera based on Scroll Velocity
+    T-->>U: Renders organic Medical Intelligence atmosphere
+    end
+```
+
 ### 4. Complete Prediction Flow — User Submits Biometric Form
 
 ```

@@ -313,7 +313,8 @@ def login():
             if row and check_password_hash(row[2], password):
                 user = User(id=row[0], username=row[1], role=row[3])
                 login_user(user)
-                return jsonify({"success": True, "redirect": url_for("home")})
+                next_url = request.args.get("next") or url_for("home")
+                return jsonify({"success": True, "redirect": next_url})
         return jsonify({"error": "Invalid username or password"}), 401
     return render_template("login.html")
 
@@ -475,10 +476,31 @@ def report():
     try:
         payload = request.form.to_dict()
         result = run_prediction(payload)
-        return render_template("report.html", result=result)
+        name = result.get("name", "")
+        history = []
+        if name:
+            with sqlite3.connect(DB_PATH) as conn:
+                conn.row_factory = sqlite3.Row
+                c = conn.cursor()
+                cols_str = ",".join(["id","name","prediction","probability","timestamp","message"] + COLUMNS_V1)
+                c.execute(f"SELECT {cols_str} FROM predictions WHERE LOWER(name) LIKE ? AND id != ? ORDER BY id DESC LIMIT 10", (f"%{name.lower()}%", result["id"]))
+                history = [dict(r) for r in c.fetchall()]
+        return render_template("report.html", result=result, history=history)
     except Exception as e:
         return render_template("report.html", error=str(e))
 
+
+@app.route("/api/predictions/by-name", methods=["GET"])
+def predictions_by_name():
+    name = request.args.get("name", "").strip()
+    if not name:
+        return jsonify([])
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        cols_str = ",".join(["id","name","prediction","probability","timestamp","message"] + COLUMNS_V1)
+        c.execute(f"SELECT {cols_str} FROM predictions WHERE LOWER(name) LIKE ? ORDER BY id DESC LIMIT 20", (f"%{name.lower()}%",))
+        return jsonify([dict(r) for r in c.fetchall()])
 
 @app.route("/api/prediction/<int:pred_id>", methods=["GET"])
 def get_prediction(pred_id):
