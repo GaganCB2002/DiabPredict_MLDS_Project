@@ -32,14 +32,11 @@
 <body class="bg-[#FFFFFF] text-[#1A1A2E] antialiased overflow-x-hidden selection:bg-brand-accent selection:text-white">
     <div id="authStatus" data-authenticated="{{ current_user.is_authenticated|lower }}"></div>
 
-    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
-    <div class="fixed inset-0 bg-gradient-to-b from-transparent via-white/60 to-white pointer-events-none -z-10"></div>
-
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full z-50 pt-6 px-8 md:px-16">
-        <div class="flex justify-between items-center max-w-screen-2xl mx-auto">
-            <div class="font-display font-bold text-xl tracking-tighter text-[#1A1A2E]">DiabPredict</div>
-            <div class="flex items-center gap-6 font-sans text-sm tracking-widest uppercase">
+        <div class="flex flex-col md:flex-row justify-between items-center max-w-screen-2xl mx-auto">
+            <div class="font-display font-bold tracking-tight text-xl mb-4 md:mb-0">DIABPREDICT <span class="text-brand-accent">AI</span></div>
+            <div class="flex flex-wrap items-center justify-center gap-4 font-sans text-[10px] sm:text-xs tracking-widest uppercase">
                 <a href="#overview" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Overview</a>
                 <a href="#workflow" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Workflow</a>
                 <a href="#metrics" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Metrics</a>
@@ -64,25 +61,21 @@
         <div id="smooth-content">
             
             <!-- SECTION 1: Hero -->
-            <section id="hero" class="h-screen w-full flex flex-col justify-center px-12 md:px-24 relative overflow-hidden">
-                <!-- Hero Coding Text Background -->
+            <main class="relative z-10 w-full">
+            <section id="hero" class="h-screen w-full flex flex-col justify-center px-6 sm:px-12 md:px-24 relative overflow-hidden">
                 <div class="absolute inset-0 pointer-events-none opacity-40 select-none z-0">
-                    <div class="coding-text-effect fast" style="top: 15%;">function init() { AI.load('diabpredict'); }</div>
-                    <div class="coding-text-effect reverse" style="top: 75%;">await system.verify(); // Secure Connection</div>
+                    <canvas id="bg-canvas" class="w-full h-full"></canvas>
                 </div>
-                <div class="max-w-7xl mx-auto w-full z-10 hero-text-container">
-                    <p class="font-sans text-brand-accent tracking-[0.3em] uppercase text-sm mb-6 clip-reveal">Medical Intelligence Layer 2.0</p>
-                    <h1 class="font-display text-7xl md:text-[9rem] font-bold leading-[0.9] tracking-tighter clip-reveal">
+                <div class="max-w-screen-2xl mx-auto w-full relative z-10">
+                    <div class="font-sans text-brand-accent tracking-[0.3em] uppercase text-xs md:text-sm mb-4 md:mb-8 font-semibold flex items-center gap-4 clip-reveal">
+                        <div class="w-8 md:w-16 h-[1px] bg-brand-accent"></div>
+                        Advanced Agentic Coding
+                    </div>
+                    <h1 class="font-display text-5xl sm:text-7xl md:text-[9rem] font-bold leading-[0.9] tracking-tighter clip-reveal">
                         Predictive<br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent2">Health.</span>
                     </h1>
                     <p class="font-sans text-xl text-gray-400 max-w-xl mt-8 clip-reveal font-light leading-relaxed">An immersive diagnostic engine merging deep learning with organic clinical data.</p>
-                </div>
-                <div class="absolute bottom-12 left-12 md:left-24 flex items-center gap-4 text-xs font-sans tracking-widest uppercase text-gray-500">
-                    <span>Initialize Scan</span>
-                    <div class="w-12 h-[1px] bg-[#D1D5DB] overflow-hidden relative">
-                        <div class="absolute top-0 left-0 h-full w-full bg-brand-accent animate-scroll-line"></div>
-                    </div>
                 </div>
             </section>
 
@@ -107,9 +100,9 @@
             </div>
 
             <!-- SECTION 2: System Overview (Dashboard Counters) -->
-            <section id="overview" class="min-h-screen w-full px-12 md:px-24 py-32 relative" data-dashboard-loaded="false">
-                <div class="max-w-screen-2xl mx-auto">
-                    <div class="mb-32">
+            <section id="overview" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative" data-dashboard-loaded="false">
+                <div class="max-w-screen-2xl mx-auto relative z-10">
+                    <div class="mb-16 md:mb-24">
                         <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4 scroll-fade">System Overview</h2>
                         <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x"></div>
                     </div>
@@ -169,17 +162,12 @@
             </section>
 
             <!-- SECTION 3: Neural Workflow -->
-            <section id="workflow" class="min-h-screen w-full px-12 md:px-24 py-32 relative overflow-hidden">
-                <!-- Premium Coding Text Background Effect -->
+            <section id="workflow" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative overflow-hidden">
                 <div class="absolute inset-0 pointer-events-none opacity-40 select-none">
-                    <div class="coding-text-effect fast" style="top: 10%;">const prediction = await model.predict(); // Initializing AI Engine...</div>
-                    <div class="coding-text-effect slow" style="top: 25%;">Loading Medical Dataset... Scanning Health Metrics...</div>
-                    <div class="coding-text-effect reverse" style="top: 40%;">Training Neural Network... Analyzing Patient Report...</div>
-                    <div class="coding-text-effect fast" style="top: 65%;">Authentication Successful :: API Connected :: Database Synced</div>
-                    <div class="coding-text-effect slow" style="top: 80%;">Model Accuracy 98.6% -> Prediction Complete -> Generating Output...</div>
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-accent/5 rounded-full blur-3xl"></div>
                 </div>
                 <div class="max-w-screen-2xl mx-auto relative z-10">
-                    <div class="mb-24 scroll-fade">
+                    <div class="mb-16 md:mb-24">
                         <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Pipeline</p>
                         <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Neural Workflow</h2>
                         <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x"></div>
@@ -214,9 +202,9 @@
             </section>
 
             <!-- SECTION 4: Key Risk Factors -->
-            <section id="metrics" class="min-h-screen w-full px-12 md:px-24 py-32 relative bg-gradient-to-b from-white via-gray-50/30 to-white">
-                <div class="max-w-screen-2xl mx-auto">
-                    <div class="mb-24 scroll-fade">
+            <section id="metrics" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative bg-gradient-to-b from-white via-gray-50/30 to-white">
+                <div class="max-w-screen-2xl mx-auto relative z-10">
+                    <div class="mb-16 md:mb-24 text-right">
                         <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4 font-sans">Biometrics</p>
                         <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Key Risk Factors</h2>
                         <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x origin-right"></div>
@@ -283,9 +271,9 @@
             </section>
 
             <!-- SECTION 5: Platform Capabilities -->
-            <section id="capabilities" class="min-h-screen w-full px-12 md:px-24 py-32 relative">
-                <div class="max-w-screen-2xl mx-auto">
-                    <div class="mb-24 scroll-fade">
+            <section id="capabilities" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative">
+                <div class="max-w-screen-2xl mx-auto relative z-10">
+                    <div class="mb-16 md:mb-24">
                         <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Features</p>
                         <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Platform Capabilities</h2>
                         <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x"></div>
