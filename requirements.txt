@@ -3,3 +3,4 @@ Flask-Login
 pandas
 scikit-learn
 numpy
+gunicorn
