@@ -46,9 +46,15 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "model_parameters.csv")
 
 import os
+import shutil
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Use /tmp for writable SQLite database in Vercel Serverless environments
 if os.environ.get("VERCEL"):
     DB_PATH = "/tmp/hms.db"
+    bundled_db = os.path.join(BASE_DIR, "hms.db")
+    if not os.path.exists(DB_PATH) and os.path.exists(bundled_db):
+        shutil.copy2(bundled_db, DB_PATH)
 else:
     DB_PATH = "hms.db"
 
