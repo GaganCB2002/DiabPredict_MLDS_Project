@@ -255,7 +255,7 @@
     </div>
 
     <script>
-        {% if result %}
+        /* {% if result %} */
         // Animated probability counter
         const prob = Number(`{{ result.probability or 0 }}`) * 100;
         const isHigh = Number(`{{ result.prediction }}`) === 1;
@@ -326,14 +326,14 @@
             metrics.forEach(function(r) { csv += r.map(escCSV).join(',') + '\n'; });
             csv += '\nPrediction,Probability,Message\n';
             
-            const predictionText = `{{ "High Risk" if result.prediction == 1 else "Low Risk" }}`;
-            const messageText = `{{ result.message | replace("`", "'") }}`;
+            const predictionText = "{{ 'High Risk' if result.prediction == 1 else 'Low Risk' }}";
+            const messageText = {{ result.message | tojson }};
             csv += escCSV(predictionText) + ',' + prob.toFixed(1) + '%,' + escCSV(messageText) + '\n';
             
-            {% if history %}
+            /* {% if history %} */
             csv += '\nPrevious Results\n';
             csv += 'Date,Risk,Probability,Glucose,BMI,BP,Insulin\n';
-            {% for h in history %}
+            /* {% for h in history %} */
             const histTime = `{{ h.timestamp.split(" ")[0] if h.timestamp else "-" }}`;
             const histRisk = `{{ "HIGH" if h.prediction == 1 else "LOW" }}`;
             const histProb = `{{ (h.probability or 0) * 100 }}`;
@@ -344,8 +344,8 @@
             
             csv += escCSV(histTime) + ',' + escCSV(histRisk) + ',' + histProb + '%,' + 
                    escCSV(histGluc) + ',' + escCSV(histBmi) + ',' + escCSV(histBP) + ',' + escCSV(histIns) + '\n';
-            {% endfor %}
-            {% endif %}
+            /* {% endfor %} */
+            /* {% endif %} */
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -354,7 +354,7 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-        {% endif %}
+        /* {% endif %} */
     </script>
 </body>
 </html>
