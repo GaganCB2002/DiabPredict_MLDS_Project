@@ -196,29 +196,73 @@
                         <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x"></div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+                        <!-- Step 1 -->
                         <div class="scroll-fade-up group">
                             <div class="flex items-center gap-4 mb-6">
                                 <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">01</span>
                                 <div class="w-8 h-[1px] bg-brand-accent/30"></div>
                             </div>
                             <h3 class="font-display text-2xl font-bold mb-4">Input Biometrics</h3>
-                            <p class="font-sans text-gray-400 font-light leading-relaxed">Submit eight key clinical metrics including Glucose, BMI, Age, Blood Pressure, Insulin, Skin Thickness, Pregnancies, and Pedigree Function for comprehensive analysis.</p>
+                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-emerald mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
+                                <div class="coding-effect-container relative h-full flex flex-col">
+                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="// 01. Aggregate Inputs
+const patientData = {
+  glucose: 120,
+  bmi: 28.5,
+  age: 45,
+  ... // 5 additional features
+};
+
+console.log('Biometrics Loaded.');"></span>
+                                    <div><span class="inline-block w-2 h-4 bg-brand-emerald animate-pulse"></span></div>
+                                </div>
+                            </div>
                         </div>
+                        <!-- Step 2 -->
                         <div class="scroll-fade-up group">
                             <div class="flex items-center gap-4 mb-6">
                                 <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">02</span>
                                 <div class="w-8 h-[1px] bg-brand-accent/30"></div>
                             </div>
                             <h3 class="font-display text-2xl font-bold mb-4">Neural Processing</h3>
-                            <p class="font-sans text-gray-400 font-light leading-relaxed">The logistic regression model applies trained weights via SGD optimization, standardizing inputs and computing sigmoid-activated probability scores.</p>
+                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-accent mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
+                                <div class="coding-effect-container relative h-full flex flex-col">
+                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="# 02. SGD Optimization
+def predict_risk(X):
+  X_scaled = scaler.transform(X)
+  
+  # Logistic Regression
+  z = np.dot(X_scaled, W) + b
+  return sigmoid(z)
+
+predict_risk(patientData)"></span>
+                                    <div><span class="inline-block w-2 h-4 bg-brand-accent animate-pulse"></span></div>
+                                </div>
+                            </div>
                         </div>
+                        <!-- Step 3 -->
                         <div class="scroll-fade-up group">
                             <div class="flex items-center gap-4 mb-6">
                                 <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">03</span>
                                 <div class="w-8 h-[1px] bg-brand-accent/30"></div>
                             </div>
                             <h3 class="font-display text-2xl font-bold mb-4">Risk Report</h3>
-                            <p class="font-sans text-gray-400 font-light leading-relaxed">Full diagnostic report with probability scoring, radar chart visualization, and printable export for clinical records.</p>
+                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-warning mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
+                                <div class="coding-effect-container relative h-full flex flex-col">
+                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="// 03. Diagnostic Output
+if (probability > 0.5) {
+  dispatch({
+    type: 'HIGH_RISK_ALERT',
+    confidence: prob.toFixed(4)
+  });
+  exportToEMR(report);
+}"></span>
+                                    <div><span class="inline-block w-2 h-4 bg-brand-warning animate-pulse"></span></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -524,6 +568,33 @@
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
+    // Coding Effect Logic for Neural Workflow
+    document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
+                    entry.target.classList.add('typed');
+                    const code = entry.target.getAttribute('data-code');
+                    let i = 0;
+                    entry.target.innerText = '';
+                    const type = () => {
+                        if (i < code.length) {
+                            entry.target.innerText += code.charAt(i);
+                            i++;
+                            setTimeout(type, 10 + Math.random() * 20); // Fast matrix typing
+                        }
+                    };
+                    setTimeout(type, 300); // Small delay after intersecting
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.coding-effect').forEach(el => {
+            el.innerText = ""; // Clear initially
+            observer.observe(el);
+        });
+    });
+
     (function prefillForm() {
         const hash = window.location.hash;
         if (!hash || hash === '#') return;
