@@ -3,7 +3,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import SGDClassifier
 import os
+import sys
+import time
+import warnings
+from sklearn.exceptions import ConvergenceWarning
 
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 def train_model():
     data_path = "diabetes.csv"
@@ -30,9 +35,15 @@ def train_model():
     epochs = 100
     for epoch in range(epochs):
         model.fit(X_train_scaled, y_train)
-        if (epoch + 1) % 10 == 0 or epoch == epochs - 1:
-            acc = model.score(X_test_scaled, y_test)
-            print(f"Epoch {epoch+1}/{epochs} - Test Accuracy: {acc:.4f}")
+        acc = model.score(X_test_scaled, y_test)
+        
+        progress = int((epoch + 1) / epochs * 30)
+        bar = "█" * progress + "-" * (30 - progress)
+        sys.stdout.write(f"\rTraining Model: [{bar}] Epoch {epoch+1}/{epochs} | Accuracy: {acc:.4f}")
+        sys.stdout.flush()
+        time.sleep(0.02)
+        
+    print() # Add a newline after the animation finishes
     final_accuracy = model.score(X_test_scaled, y_test)
     print(f"Final Model Accuracy: {final_accuracy:.4f}")
     weights = model.coef_[0]
