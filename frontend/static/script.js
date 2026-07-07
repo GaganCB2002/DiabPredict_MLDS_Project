@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.borderColor = 'rgba(0,0,0,0.08)';
         } catch (e) {
-            console.warn('Chart ini failed:', e);
+            console.warn('Chart init failed:', e);
         }
     }
 
@@ -652,7 +652,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatMessages.appendChild(aiDiv);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             })
-            .catch(err => { loadDiv.remove(); })
+            .catch(err => { 
+                loadDiv.remove(); 
+                const errDiv = document.createElement('div');
+                errDiv.className = 'text-brand-danger';
+                errDiv.innerHTML = '<span class="text-brand-accent mr-2">SYS></span> Connection error: ' + err.message;
+                chatMessages.appendChild(errDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
             .finally(() => {
                 chatInput.disabled = false;
                 chatInput.focus();

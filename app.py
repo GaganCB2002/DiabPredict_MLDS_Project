@@ -22,6 +22,10 @@ import os
 import sqlite3
 import datetime
 
+def print_terminal_log(action, details=""):
+    timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+    print(f"[\033[96m{timestamp}\033[0m] \033[92mACTION:\033[0m {action} \033[93m{details}\033[0m")
+
 app = Flask(__name__,
             template_folder='frontend/templates',
             static_folder='frontend/static')
@@ -347,8 +351,10 @@ def login():
             if row and check_password_hash(row[2], password):
                 user = User(id=row[0], username=row[1], role=row[3])
                 login_user(user)
+                print_terminal_log("User Login", f"User '{username}' logged in successfully.")
                 next_url = request.args.get("next") or url_for("home")
                 return jsonify({"success": True, "redirect": next_url})
+        print_terminal_log("Login Failed", f"Failed attempt for user '{username}'.")
         return jsonify({"error": "Invalid username or password"}), 401
     return render_template("login.html")
 
@@ -356,6 +362,7 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    print_terminal_log("User Logout", f"User '{current_user.username}' logged out.")
     logout_user()
     return redirect(url_for("home"))
 
@@ -390,6 +397,7 @@ def chat():
         reply = "Hello! I am your DiabPredict AI Assistant..."
     else:
         reply = "That's a great question. While I am an AI, I recommend discussing this with your healthcare provider..."
+    print_terminal_log("AI Chat Query", f"User asked: '{msg}' | Reply sent.")
     return jsonify({"reply": reply})
 
 
@@ -424,6 +432,7 @@ def register():
                 )
             conn.commit()
             log_audit(user_id, f"User registered: {username} ({role})")
+            print_terminal_log("User Registration", f"New user '{username}' registered as {role}.")
         return jsonify(
             {"success": True, "message": "Registration successful. Please log in."}
         )
@@ -471,6 +480,9 @@ def run_prediction(payload):
         message = f"Based on the data, {name} is predicted to have diabetes."
     else:
         message = f"Based on the data, {name} is predicted to not have diabetes."
+        
+    print_terminal_log("Prediction Engine", f"Analyzed patient '{name}' | High Risk Probability: {probability*100:.1f}%")
+        
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
