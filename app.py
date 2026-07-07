@@ -1,5 +1,5 @@
 """
-DiabPredict AI - Main Application Backend
+diabpredict - Main Application Backend
 This file acts as the core Flask server orchestrating:
 1. Routing and views
 2. Database interactions (SQLite3)
@@ -30,6 +30,7 @@ app = Flask(__name__,
             template_folder='frontend/templates',
             static_folder='frontend/static')
 app.secret_key = "super_secret_key_for_diabpredict_ai"
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -394,7 +395,7 @@ def chat():
     elif "bmi" in msg or "weight" in msg:
         reply = "A healthy BMI is between 18.5 and 24.9..."
     elif "hello" in msg or "hi" in msg:
-        reply = "Hello! I am your DiabPredict AI Assistant..."
+        reply = "Hello! I am your diabpredict Assistant..."
     else:
         reply = "That's a great question. While I am an AI, I recommend discussing this with your healthcare provider..."
     print_terminal_log("AI Chat Query", f"User asked: '{msg}' | Reply sent.")
@@ -901,6 +902,56 @@ def admin_patients():
             log_audit(current_user.id, f"Added Patient: {data['username']}")
             conn.commit()
             return jsonify({"success": True})
+
+@app.route("/api/admin/patient/<int:patient_id>", methods=["GET"])
+@login_required
+def admin_patient_details(patient_id):
+    if current_user.role != "Admin":
+        return jsonify({"error": "Unauthorized"}), 403
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        
+        # Get patient profile
+        c.execute(
+            "SELECT u.id, u.username, u.email, u.phone, p.dob, p.gender, p.blood_group "
+            "FROM users u LEFT JOIN profiles_patient p ON u.id = p.user_id "
+            "WHERE u.id = ? AND u.role = 'Patient'", (patient_id,)
+        )
+        patient = c.fetchone()
+        if not patient:
+            return jsonify({"error": "Patient not found"}), 404
+        patient_data = dict(patient)
+        
+        # Get predictions
+        cols_str = ",".join(
+            ["id", "name", "prediction", "probability", "timestamp", "message"]
+            + COLUMNS_V1
+        )
+        c.execute(
+            f"SELECT {cols_str} FROM predictions WHERE user_id = ? ORDER BY id DESC",
+            (patient_id,),
+        )
+        patient_data["predictions"] = [dict(row) for row in c.fetchall()]
+        
+        # Get consultations
+        c.execute(
+            "SELECT c.id, c.date, c.symptoms, c.diagnosis, c.notes, u.username as doctor_name "
+            "FROM consultations c JOIN users u ON c.doctor_id = u.id "
+            "WHERE c.patient_id = ? ORDER BY c.date DESC",
+            (patient_id,),
+        )
+        consultations = [dict(row) for row in c.fetchall()]
+        for cons in consultations:
+            c.execute(
+                "SELECT medicine_name, dosage, duration FROM prescriptions WHERE consultation_id = ?",
+                (cons["id"],),
+            )
+            cons["prescriptions"] = [dict(r) for r in c.fetchall()]
+            
+        patient_data["consultations"] = consultations
+        
+        return jsonify(patient_data)
 
 
 @app.route("/api/admin/doctors", methods=["GET", "POST"])

@@ -1,4 +1,4 @@
-# DiabPredict AI — Medical Intelligence Platform
+# diabpredict — Medical Intelligence Platform
 
 A full-stack Hospital Management System with AI-powered diabetes prediction, EMR portal, role-based access, and interactive analytics dashboard.
 
@@ -77,7 +77,7 @@ flowchart TD
 
 ### 3.5 Cinematic UI & Animation Architecture (Three.js & GSAP)
 
-DiabPredict AI features an award-winning cinematic UI built to run at 60 FPS using GPU acceleration.
+diabpredict features an award-winning cinematic UI built to run at 60 FPS using GPU acceleration.
 
 ```mermaid
 sequenceDiagram

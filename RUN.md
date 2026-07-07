@@ -1,6 +1,6 @@
-# 🚀 Running DiabPredict: Complete Beginner Guide
+# 🚀 Running diabpredict: Complete Beginner Guide
 
-Welcome to the **DiabPredict AI System**. If you have never worked on this project before, this guide will walk you through exactly how to set it up from absolute scratch. 
+Welcome to the **diabpredict System**. If you have never worked on this project before, this guide will walk you through exactly how to set it up from absolute scratch. 
 
 We will not skip a single step. Follow these instructions exactly.
 
@@ -101,7 +101,7 @@ pip install -r requirements.txt
 
 ## 5. Database Setup
 
-DiabPredict uses SQLite, which means **you do not need to install a database server**. The database is just a file (`hms.db`).
+diabpredict uses SQLite, which means **you do not need to install a database server**. The database is just a file (`hms.db`).
 
 The application automatically creates the database and seeds the default users the first time you run it. **You do not need to run manual migration commands.**
 
