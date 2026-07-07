@@ -140,6 +140,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
+            // Typing effect for Neural Workflow code blocks
+            gsap.utils.toArray(".coding-effect-container").forEach(container => {
+                const textEl = container.querySelector('.coding-effect');
+                if (!textEl) return;
+                const fullText = textEl.getAttribute('data-code');
+                if (!fullText) return;
+                
+                textEl.textContent = ''; // Start empty
+                
+                ScrollTrigger.create({
+                    trigger: container,
+                    start: "top 85%",
+                    onEnter: () => {
+                        let i = 0;
+                        textEl.textContent = '';
+                        clearInterval(container.typeInterval);
+                        container.typeInterval = setInterval(() => {
+                            textEl.textContent += fullText.charAt(i);
+                            i++;
+                            if (i >= fullText.length) {
+                                clearInterval(container.typeInterval);
+                            }
+                        }, 15); // Fast typing effect
+                    },
+                    onLeaveBack: () => {
+                        // Reset when scrolling back up to type again
+                        clearInterval(container.typeInterval);
+                        textEl.textContent = '';
+                    }
+                });
+            });
+
             gsap.utils.toArray(".coding-text-effect.reverse").forEach(el => {
                 gsap.to(el, {
                     scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: 1 },
