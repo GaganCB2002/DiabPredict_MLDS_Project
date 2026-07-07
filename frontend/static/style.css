@@ -47,17 +47,18 @@ input[type=number]::-webkit-outer-spin-button {
     transform-origin: left;
 }
 
-.clip-reveal { clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
+.clip-reveal { /* clip-path moved to GSAP fromTo to prevent permanently hidden text */ }
 .scroll-scale-x { transform: scaleX(0); transform-origin: left; }
 .scroll-scale-x.origin-right { transform-origin: right; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-.text-gray-400 { color: #9CA3AF !important; }
-.text-gray-500 { color: #6B7280 !important; }
-.text-gray-600 { color: #4B5563 !important; }
-.placeholder-gray-500::placeholder { color: #6B7280 !important; }
-.placeholder-gray-600::placeholder { color: #4B5563 !important; }
+/* Adjusted for high contrast on light mode */
+.text-gray-400 { color: #4B5563 !important; }
+.text-gray-500 { color: #374151 !important; }
+.text-gray-600 { color: #1F2937 !important; }
+.placeholder-gray-500::placeholder { color: #4B5563 !important; }
+.placeholder-gray-600::placeholder { color: #374151 !important; }
 
 .glass-card {
     background: rgba(255, 255, 255, 0.7);

@@ -109,13 +109,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Premium Reverse Storytelling
             gsap.utils.toArray(".clip-reveal").forEach(el => {
-                gsap.to(el, {
-                    scrollTrigger: { trigger: "#hero", start: "top 80%", toggleActions: "play none none reverse" },
-                    clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                    duration: 1.5,
-                    stagger: 0.2,
-                    ease: "power4.out"
-                });
+                gsap.fromTo(el,
+                    { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)", opacity: 0, y: 20 },
+                    {
+                        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" },
+                        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                        opacity: 1, y: 0,
+                        duration: 1.5,
+                        ease: "power4.out"
+                    }
+                );
             });
 
             gsap.utils.toArray(".scroll-fade").forEach(el => {
