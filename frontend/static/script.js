@@ -48,117 +48,59 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Lenis not available:', e);
     }
 
-    // 2. Subtle Three.js Particle Background
-    const initThreeJS = () => {
-        const canvas = document.getElementById('bg-canvas');
-        if (!canvas || typeof THREE === 'undefined') return;
+    // 2. Premium Video Parallax Background
+    const initVideoParallax = () => {
+        const video = document.getElementById('bg-video');
+        if (!video) return;
 
-        try {
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xFFFFFF);
+        let scrollY = 0;
+        if (lenis) {
+            lenis.on('scroll', (e) => { scrollY = e.scroll; });
+        }
 
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 15;
-            camera.position.y = 5;
+        // Interactive Mouse Parallax
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetMouseX = 0;
+        let targetMouseY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
 
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.addEventListener('mousemove', (event) => {
+            targetMouseX = (event.clientX - windowHalfX) * 0.05;
+            targetMouseY = (event.clientY - windowHalfY) * 0.05;
+        });
 
-            const particleCount = 2000;
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(particleCount * 3);
-            const colors = new Float32Array(particleCount * 3);
+        // Ensure video has transform origin center for smooth scaling/moving
+        video.style.transformOrigin = "center center";
 
-            const color1 = new THREE.Color(0x2563EB); // Blue
-            const color2 = new THREE.Color(0x0891B2); // Cyan
+        const tick = () => {
+            // Smooth Mouse Interpolation
+            mouseX += (targetMouseX - mouseX) * 0.05;
+            mouseY += (targetMouseY - mouseY) * 0.05;
+            
+            // Calculate parallax based on scroll
+            const yOffset = scrollY * 0.15;
+            
+            // Apply scale (to prevent borders showing during parallax) and translate
+            video.style.transform = `translate3d(${mouseX}px, ${yOffset + mouseY}px, 0) scale(1.05)`;
+            
+            requestAnimationFrame(tick);
+        };
+        tick();
 
-            for (let i = 0; i < particleCount; i++) {
-                const t = i * 0.1; // Frequency of twist
-                const r = 4 + (Math.random() * 0.5 - 0.25); // Radius with slight organic noise
-                const yPos = (i - particleCount / 2) * 0.03; // Vertical spread
-                
-                if (i % 2 === 0) {
-                    // Strand 1
-                    positions[i * 3] = r * Math.cos(t);
-                    positions[i * 3 + 1] = yPos;
-                    positions[i * 3 + 2] = r * Math.sin(t);
+        const nav = document.querySelector('nav');
+        if (nav && lenis) {
+            lenis.on('scroll', (e) => {
+                if (e.scroll > 50) {
+                    nav.classList.add('navbar-blur');
                 } else {
-                    // Strand 2
-                    positions[i * 3] = r * Math.cos(t + Math.PI);
-                    positions[i * 3 + 1] = yPos;
-                    positions[i * 3 + 2] = r * Math.sin(t + Math.PI);
+                    nav.classList.remove('navbar-blur');
                 }
-
-                const mixedColor = color1.clone().lerp(color2, Math.random());
-                colors[i * 3] = mixedColor.r;
-                colors[i * 3 + 1] = mixedColor.g;
-                colors[i * 3 + 2] = mixedColor.b;
-            }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const material = new THREE.PointsMaterial({
-                size: 0.05,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.25,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
             });
-
-            const particleSystem = new THREE.Points(geometry, material);
-            scene.add(particleSystem);
-
-            let scrollY = 0;
-            if (lenis) {
-                lenis.on('scroll', (e) => { scrollY = e.scroll; });
-            }
-
-            const tick = () => {
-                const time = Date.now() * 0.001;
-                
-                // DNA Rotation tied strongly to Scroll Position
-                particleSystem.rotation.y = (time * 0.1) + (scrollY * 0.005);
-                particleSystem.rotation.x = 0; // Keep helix upright
-                
-                // Advanced Camera Scroll Reactions
-                const targetY = 5 - (scrollY * 0.003);
-                const targetZ = 15 - (scrollY * 0.0015);
-                const tiltX = (scrollY * 0.0001); // Subtle camera tilt
-                
-                camera.position.y += (targetY - camera.position.y) * 0.03;
-                camera.position.z += (targetZ - camera.position.z) * 0.03;
-                camera.rotation.x = -tiltX;
-                camera.lookAt(0, 0, 0);
-                
-                renderer.render(scene, camera);
-                requestAnimationFrame(tick);
-            };
-            tick();
-
-            const nav = document.querySelector('nav');
-            if (nav && lenis) {
-                lenis.on('scroll', (e) => {
-                    if (e.scroll > 50) {
-                        nav.classList.add('navbar-blur');
-                    } else {
-                        nav.classList.remove('navbar-blur');
-                    }
-                });
-            }
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        } catch (e) {
-            console.warn('Three.js init failed:', e);
         }
     };
-    initThreeJS();
+    initVideoParallax();
 
     // 3. GSAP ScrollTrigger Animations
     if (typeof gsap !== 'undefined') {

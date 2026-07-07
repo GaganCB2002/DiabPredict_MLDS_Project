@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiabPredict AI - Medical Intelligence Platform</title>
+    <title>DiabPredict - Medical Intelligence Platform</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -30,23 +33,28 @@
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.32/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
+
 <body class="bg-[#FFFFFF] text-[#1A1A2E] antialiased overflow-x-hidden selection:bg-brand-accent selection:text-white">
     <div id="authStatus" data-authenticated="{{ current_user.is_authenticated|lower }}"></div>
 
     <!-- Consent Banner -->
-    <div id="consentOverlay" class="fixed bottom-6 right-6 z-[100] max-w-sm bg-white/95 backdrop-blur-md border border-[#E8E0D8] rounded-2xl shadow-2xl p-6 transition-all duration-500 translate-y-full opacity-0 pointer-events-none">
+    <div id="consentOverlay"
+        class="fixed bottom-6 right-6 z-[100] max-w-sm bg-white/95 backdrop-blur-md border border-[#E8E0D8] rounded-2xl shadow-2xl p-6 transition-all duration-500 translate-y-full opacity-0 pointer-events-none">
         <div class="flex items-center gap-3 mb-3">
             <i class="fa-solid fa-cookie-bite text-brand-accent text-lg"></i>
             <h3 class="font-display font-bold text-lg text-[#1A1A2E]">Privacy &amp; Terms</h3>
         </div>
         <p class="text-sm text-gray-500 leading-relaxed mb-5">
-            By using DiabPredict AI, you agree to our Terms &amp; Conditions. We use essential cookies to ensure platform security, and we are saving all details of yours securely.
+            By using DiabPredict, you agree to our Terms &amp; Conditions. We use essential cookies to ensure
+            platform security, and we are saving all details of yours securely.
         </p>
         <div class="flex gap-3">
-            <button id="consentAcceptBtn" class="flex-1 bg-brand-accent hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">
+            <button id="consentAcceptBtn"
+                class="flex-1 bg-brand-accent hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">
                 Accept
             </button>
-            <button id="consentDeclineBtn" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-gray-200">
+            <button id="consentDeclineBtn"
+                class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl text-sm transition-all border border-gray-200">
                 Decline
             </button>
         </div>
@@ -56,25 +64,37 @@
     <nav class="fixed top-0 left-0 w-full z-50 pt-6 px-8 md:px-16">
         <div class="flex flex-col md:flex-row justify-between items-center max-w-screen-2xl mx-auto">
             <div class="font-display font-bold tracking-tight text-xl mb-4 md:mb-0 flex items-center gap-3">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="DiabPredict Logo" class="w-8 h-8 object-contain">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="DiabPredict Logo"
+                    class="w-8 h-8 object-contain">
                 DIABPREDICT <span class="text-brand-accent">AI</span>
             </div>
-            <div class="flex flex-wrap items-center justify-center gap-4 font-sans text-[10px] sm:text-xs tracking-widest uppercase">
+            <div
+                class="flex flex-wrap items-center justify-center gap-4 font-sans text-[10px] sm:text-xs tracking-widest uppercase">
                 <a href="#overview" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Overview</a>
                 <a href="#workflow" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Workflow</a>
                 <a href="#metrics" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Metrics</a>
                 <a href="#analysis" class="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Analysis</a>
                 {% if current_user.is_authenticated %}
-                <span class="text-brand-accent text-xs flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse"></span> {{ current_user.username }}</span>
+                <span class="text-brand-accent text-xs flex items-center gap-1"><span
+                        class="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse"></span> {{ current_user.username
+                    }}</span>
                 {% if current_user.role == 'Admin' %}
-                <a href="/admin" class="text-brand-accent2 border border-brand-accent2/40 px-3 py-1.5 rounded-full hover:bg-brand-accent2 hover:text-white transition-all text-xs"><i class="fa-solid fa-screwdriver-wrench mr-1"></i>HMS Admin</a>
+                <a href="/admin"
+                    class="text-brand-accent2 border border-brand-accent2/40 px-3 py-1.5 rounded-full hover:bg-brand-accent2 hover:text-white transition-all text-xs"><i
+                        class="fa-solid fa-screwdriver-wrench mr-1"></i>HMS Admin</a>
                 {% elif current_user.role == 'Doctor' %}
-                <a href="/doctor" class="text-brand-success border border-brand-success/40 px-3 py-1.5 rounded-full hover:bg-brand-success hover:text-white transition-all text-xs"><i class="fa-solid fa-user-doctor mr-1"></i>EMR Portal</a>
+                <a href="/doctor"
+                    class="text-brand-success border border-brand-success/40 px-3 py-1.5 rounded-full hover:bg-brand-success hover:text-white transition-all text-xs"><i
+                        class="fa-solid fa-user-doctor mr-1"></i>EMR Portal</a>
                 {% endif %}
-                <a href="/analysis" class="text-brand-accent border border-brand-accent/40 px-3 py-1.5 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs"><i class="fa-solid fa-chart-simple mr-1"></i>Reports</a>
-                <a href="/logout" class="text-brand-danger border border-brand-danger/40 px-3 py-1.5 rounded-full hover:bg-brand-danger hover:text-white transition-all text-xs">Logout</a>
+                <a href="/analysis"
+                    class="text-brand-accent border border-brand-accent/40 px-3 py-1.5 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs"><i
+                        class="fa-solid fa-chart-simple mr-1"></i>Reports</a>
+                <a href="/logout"
+                    class="text-brand-danger border border-brand-danger/40 px-3 py-1.5 rounded-full hover:bg-brand-danger hover:text-white transition-all text-xs">Logout</a>
                 {% else %}
-                <a href="/login" class="text-brand-accent border border-brand-accent/40 px-5 py-2 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs">Authenticate</a>
+                <a href="/login"
+                    class="text-brand-accent border border-brand-accent/40 px-5 py-2 rounded-full hover:bg-brand-accent hover:text-white transition-all text-xs">Authenticate</a>
                 {% endif %}
             </div>
         </div>
@@ -82,131 +102,163 @@
 
     <main id="smooth-wrapper">
         <div id="smooth-content">
-            
+
             <!-- SECTION 1: Hero -->
             <main class="relative z-10 w-full">
-            <section id="hero" class="h-screen w-full flex flex-col justify-center px-6 sm:px-12 md:px-24 relative overflow-hidden">
-                <div class="absolute inset-0 pointer-events-none opacity-40 select-none z-0">
-                    <canvas id="bg-canvas" class="w-full h-full"></canvas>
+                <section id="hero" class="h-screen w-full flex flex-col justify-center px-6 sm:px-12 md:px-24 relative overflow-hidden">
+                <div class="absolute inset-0 pointer-events-none select-none" style="z-index: -1;">
+                    <video autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover" id="bg-video">
+                        <source src="{{ url_for('static', filename='hero_bg.mp4') }}" type="video/mp4">
+                    </video>
+                    <!-- Subtle overlay to ensure the text remains legible over bright videos -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white opacity-80"></div>
                 </div>
                 <div class="max-w-screen-2xl mx-auto w-full relative z-10">
-                    <div class="font-sans text-brand-accent tracking-[0.3em] uppercase text-xs md:text-sm mb-4 md:mb-8 font-semibold flex items-center gap-4 clip-reveal">
-                        <div class="w-8 md:w-16 h-[1px] bg-brand-accent"></div>
-                        Advanced Agentic Coding
+                        <div
+                            class="font-sans text-brand-accent tracking-[0.3em] uppercase text-xs md:text-sm mb-4 md:mb-8 font-semibold flex items-center gap-4 clip-reveal">
+                            <div class="w-8 md:w-16 h-[1px] bg-brand-accent"></div>
+                            Advanced Agentic Coding
+                        </div>
+                        <h1
+                            class="font-display text-5xl sm:text-7xl md:text-[9rem] font-bold leading-[0.9] tracking-tighter clip-reveal">
+                            Predictive<br>
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent2">Health.</span>
+                        </h1>
+                        <p class="font-sans text-xl text-gray-400 max-w-xl mt-8 clip-reveal font-light leading-relaxed">
+                            An immersive diagnostic engine merging deep learning with organic clinical data.</p>
                     </div>
-                    <h1 class="font-display text-5xl sm:text-7xl md:text-[9rem] font-bold leading-[0.9] tracking-tighter clip-reveal">
-                        Predictive<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent2">Health.</span>
-                    </h1>
-                    <p class="font-sans text-xl text-gray-400 max-w-xl mt-8 clip-reveal font-light leading-relaxed">An immersive diagnostic engine merging deep learning with organic clinical data.</p>
-                </div>
-            </section>
+                </section>
 
-            <!-- SECTION 1.5: Marquee Transition -->
-            <div class="marquee-container" style="transform: rotate(-2deg) scale(1.05) translateY(20px); transform-origin: center;">
-                <div class="marquee-content">
-                    <span class="marquee-text">ARTIFICIAL INTELLIGENCE</span>
-                    <span class="marquee-text">PREDICTIVE AI</span>
-                    <span class="marquee-text">HEALTHCARE ANALYTICS</span>
-                    <span class="marquee-text">MEDICAL INTELLIGENCE</span>
-                    <span class="marquee-text">DEEP LEARNING</span>
-                    <span class="marquee-text">REAL-TIME ANALYTICS</span>
+                <!-- SECTION 1.5: Marquee Transition -->
+                <div class="marquee-container"
+                    style="transform: rotate(-2deg) scale(1.05) translateY(20px); transform-origin: center;">
+                    <div class="marquee-content">
+                        <span class="marquee-text">ARTIFICIAL INTELLIGENCE</span>
+                        <span class="marquee-text">PREDICTIVE AI</span>
+                        <span class="marquee-text">HEALTHCARE ANALYTICS</span>
+                        <span class="marquee-text">MEDICAL INTELLIGENCE</span>
+                        <span class="marquee-text">DEEP LEARNING</span>
+                        <span class="marquee-text">REAL-TIME ANALYTICS</span>
+                    </div>
+                    <div class="marquee-content">
+                        <span class="marquee-text">ARTIFICIAL INTELLIGENCE</span>
+                        <span class="marquee-text">PREDICTIVE AI</span>
+                        <span class="marquee-text">HEALTHCARE ANALYTICS</span>
+                        <span class="marquee-text">MEDICAL INTELLIGENCE</span>
+                        <span class="marquee-text">DEEP LEARNING</span>
+                        <span class="marquee-text">REAL-TIME ANALYTICS</span>
+                    </div>
                 </div>
-                <div class="marquee-content">
-                    <span class="marquee-text">ARTIFICIAL INTELLIGENCE</span>
-                    <span class="marquee-text">PREDICTIVE AI</span>
-                    <span class="marquee-text">HEALTHCARE ANALYTICS</span>
-                    <span class="marquee-text">MEDICAL INTELLIGENCE</span>
-                    <span class="marquee-text">DEEP LEARNING</span>
-                    <span class="marquee-text">REAL-TIME ANALYTICS</span>
-                </div>
-            </div>
 
-            <!-- SECTION 2: System Overview (Dashboard Counters) -->
-            <section id="overview" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative" data-dashboard-loaded="false">
-                <div class="max-w-screen-2xl mx-auto relative z-10">
-                    <div class="mb-16 md:mb-24">
-                        <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4 scroll-fade">System Overview</h2>
-                        <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x"></div>
+                <!-- SECTION 2: System Overview (Dashboard Counters) -->
+                <section id="overview" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative"
+                    data-dashboard-loaded="false">
+                    <div class="max-w-screen-2xl mx-auto relative z-10">
+                        <div class="mb-16 md:mb-24">
+                            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4 scroll-fade">
+                                System Overview</h2>
+                            <div
+                                class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-20 mb-24">
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Total Diagnostics
+                                </p>
+                                <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="total" data-target="0">0</span>
+                                </div>
+                                <p class="text-gray-400 font-light mt-4 max-w-sm">All assessments processed by the
+                                    neural engine.</p>
+                            </div>
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4">High Risk</p>
+                                <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="high_risk" data-target="0">0</span>
+                                </div>
+                                <p class="text-gray-400 font-light mt-4 max-w-sm">Patients with elevated diabetes
+                                    probability.</p>
+                            </div>
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Low Risk</p>
+                                <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="low_risk" data-target="0">0</span>
+                                </div>
+                                <p class="text-gray-400 font-light mt-4 max-w-sm">Subjects within nominal biometric
+                                    ranges.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-20 mb-24">
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Avg Glucose</p>
+                                <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="avg_glucose" data-target="0"
+                                        data-decimals="1">0</span><span class="text-3xl text-gray-500"> mg/dL</span>
+                                </div>
+                            </div>
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4">Avg BMI</p>
+                                <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="avg_bmi" data-target="0"
+                                        data-decimals="1">0</span>
+                                </div>
+                            </div>
+                            <div class="scroll-fade-up">
+                                <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Avg Age</p>
+                                <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
+                                    <span class="counter" data-api-key="avg_age" data-target="0"
+                                        data-decimals="1">0</span><span class="text-3xl text-gray-500"> yrs</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-24 scroll-fade">
+                            <div class="flex justify-between items-end mb-12">
+                                <h3 class="font-display text-3xl font-bold">Risk Distribution</h3>
+                                <span
+                                    class="text-brand-accent font-sans text-xs tracking-widest uppercase border-b border-brand-accent pb-1">Database</span>
+                            </div>
+                            <div class="w-full h-[300px] relative">
+                                <canvas id="riskChart"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-20 mb-24">
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Total Diagnostics</p>
-                            <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="total" data-target="0">0</span>
-                            </div>
-                            <p class="text-gray-400 font-light mt-4 max-w-sm">All assessments processed by the neural engine.</p>
-                        </div>
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4">High Risk</p>
-                            <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="high_risk" data-target="0">0</span>
-                            </div>
-                            <p class="text-gray-400 font-light mt-4 max-w-sm">Patients with elevated diabetes probability.</p>
-                        </div>
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Low Risk</p>
-                            <div class="font-display text-[7rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="low_risk" data-target="0">0</span>
-                            </div>
-                            <p class="text-gray-400 font-light mt-4 max-w-sm">Subjects within nominal biometric ranges.</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-20 mb-24">
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Avg Glucose</p>
-                            <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="avg_glucose" data-target="0" data-decimals="1">0</span><span class="text-3xl text-gray-500"> mg/dL</span>
-                            </div>
-                        </div>
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4">Avg BMI</p>
-                            <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="avg_bmi" data-target="0" data-decimals="1">0</span>
-                            </div>
-                        </div>
-                        <div class="scroll-fade-up">
-                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4">Avg Age</p>
-                            <div class="font-display text-[5rem] leading-none font-bold tabular-nums">
-                                <span class="counter" data-api-key="avg_age" data-target="0" data-decimals="1">0</span><span class="text-3xl text-gray-500"> yrs</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-24 scroll-fade">
-                        <div class="flex justify-between items-end mb-12">
-                            <h3 class="font-display text-3xl font-bold">Risk Distribution</h3>
-                            <span class="text-brand-accent font-sans text-xs tracking-widest uppercase border-b border-brand-accent pb-1">Database</span>
-                        </div>
-                        <div class="w-full h-[300px] relative">
-                            <canvas id="riskChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- SECTION 3: Neural Workflow -->
-            <section id="workflow" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative overflow-hidden">
-                <div class="absolute inset-0 pointer-events-none opacity-40 select-none">
-                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-accent/5 rounded-full blur-3xl"></div>
-                </div>
-                <div class="max-w-screen-2xl mx-auto relative z-10">
-                    <div class="mb-16 md:mb-24">
-                        <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Pipeline</p>
-                        <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Neural Workflow</h2>
-                        <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x"></div>
+                <!-- SECTION 3: Neural Workflow -->
+                <section id="workflow"
+                    class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative overflow-hidden">
+                    <div class="absolute inset-0 pointer-events-none opacity-40 select-none">
+                        <div
+                            class="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-accent/5 rounded-full blur-3xl">
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
-                        <!-- Step 1 -->
-                        <div class="scroll-fade-up group">
-                            <div class="flex items-center gap-4 mb-6">
-                                <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">01</span>
-                                <div class="w-8 h-[1px] bg-brand-accent/30"></div>
+                    <div class="max-w-screen-2xl mx-auto relative z-10">
+                        <div class="mb-16 md:mb-24">
+                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Pipeline</p>
+                            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Neural Workflow
+                            </h2>
+                            <div
+                                class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x">
                             </div>
-                            <h3 class="font-display text-2xl font-bold mb-4">Input Biometrics</h3>
-                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-emerald mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
-                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
-                                <div class="coding-effect-container relative h-full flex flex-col">
-                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="// 01. Aggregate Inputs
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+                            <!-- Step 1 -->
+                            <div class="scroll-fade-up group">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span
+                                        class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">01</span>
+                                    <div class="w-8 h-[1px] bg-brand-accent/30"></div>
+                                </div>
+                                <h3 class="font-display text-2xl font-bold mb-4">Input Biometrics</h3>
+                                <div
+                                    class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-emerald mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                    <div
+                                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50">
+                                    </div>
+                                    <div class="coding-effect-container relative h-full flex flex-col">
+                                        <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1"
+                                            data-code="// 01. Aggregate Inputs
 const patientData = {
   glucose: 120,
   bmi: 28.5,
@@ -215,21 +267,27 @@ const patientData = {
 };
 
 console.log('Biometrics Loaded.');"></span>
-                                    <div><span class="inline-block w-2 h-4 bg-brand-emerald animate-pulse"></span></div>
+                                        <div><span class="inline-block w-2 h-4 bg-brand-emerald animate-pulse"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Step 2 -->
-                        <div class="scroll-fade-up group">
-                            <div class="flex items-center gap-4 mb-6">
-                                <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">02</span>
-                                <div class="w-8 h-[1px] bg-brand-accent/30"></div>
-                            </div>
-                            <h3 class="font-display text-2xl font-bold mb-4">Neural Processing</h3>
-                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-accent mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
-                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
-                                <div class="coding-effect-container relative h-full flex flex-col">
-                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="# 02. SGD Optimization
+                            <!-- Step 2 -->
+                            <div class="scroll-fade-up group">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span
+                                        class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">02</span>
+                                    <div class="w-8 h-[1px] bg-brand-accent/30"></div>
+                                </div>
+                                <h3 class="font-display text-2xl font-bold mb-4">Neural Processing</h3>
+                                <div
+                                    class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-accent mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                    <div
+                                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50">
+                                    </div>
+                                    <div class="coding-effect-container relative h-full flex flex-col">
+                                        <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1"
+                                            data-code="# 02. SGD Optimization
 def predict_risk(X):
   X_scaled = scaler.transform(X)
   
@@ -238,21 +296,27 @@ def predict_risk(X):
   return sigmoid(z)
 
 predict_risk(patientData)"></span>
-                                    <div><span class="inline-block w-2 h-4 bg-brand-accent animate-pulse"></span></div>
+                                        <div><span class="inline-block w-2 h-4 bg-brand-accent animate-pulse"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Step 3 -->
-                        <div class="scroll-fade-up group">
-                            <div class="flex items-center gap-4 mb-6">
-                                <span class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">03</span>
-                                <div class="w-8 h-[1px] bg-brand-accent/30"></div>
-                            </div>
-                            <h3 class="font-display text-2xl font-bold mb-4">Risk Report</h3>
-                            <div class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-warning mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
-                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50"></div>
-                                <div class="coding-effect-container relative h-full flex flex-col">
-                                    <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1" data-code="// 03. Diagnostic Output
+                            <!-- Step 3 -->
+                            <div class="scroll-fade-up group">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <span
+                                        class="font-display text-6xl font-bold text-brand-accent/30 group-hover:text-brand-accent/60 transition-colors">03</span>
+                                    <div class="w-8 h-[1px] bg-brand-accent/30"></div>
+                                </div>
+                                <h3 class="font-display text-2xl font-bold mb-4">Risk Report</h3>
+                                <div
+                                    class="bg-[#1A1A2E] border border-white/10 rounded-lg p-5 font-mono text-xs sm:text-sm text-brand-warning mt-4 shadow-xl overflow-hidden relative group-hover:border-brand-accent/50 transition-colors h-48">
+                                    <div
+                                        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-accent to-brand-accent2 opacity-50">
+                                    </div>
+                                    <div class="coding-effect-container relative h-full flex flex-col">
+                                        <span class="coding-effect text-left leading-relaxed whitespace-pre-wrap flex-1"
+                                            data-code="// 03. Diagnostic Output
 if (probability > 0.5) {
   dispatch({
     type: 'HIGH_RISK_ALERT',
@@ -260,357 +324,468 @@ if (probability > 0.5) {
   });
   exportToEMR(report);
 }"></span>
-                                    <div><span class="inline-block w-2 h-4 bg-brand-warning animate-pulse"></span></div>
+                                        <div><span class="inline-block w-2 h-4 bg-brand-warning animate-pulse"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- SECTION 4: Key Risk Factors -->
-            <section id="metrics" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative bg-gradient-to-b from-white via-gray-50/30 to-white">
-                <div class="max-w-screen-2xl mx-auto relative z-10">
-                    <div class="mb-16 md:mb-24 text-right">
-                        <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4 font-sans">Biometrics</p>
-                        <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Key Risk Factors</h2>
-                        <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x origin-right"></div>
+                <!-- SECTION 4: Key Risk Factors -->
+                <section id="metrics"
+                    class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative bg-gradient-to-b from-white via-gray-50/30 to-white">
+                    <div class="max-w-screen-2xl mx-auto relative z-10">
+                        <div class="mb-16 md:mb-24 text-right">
+                            <p class="text-brand-accent2 text-sm tracking-widest uppercase mb-4 font-sans">Biometrics
+                            </p>
+                            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Key Risk Factors
+                            </h2>
+                            <div
+                                class="w-full h-[1px] bg-gradient-to-r from-brand-accent2 to-transparent scroll-scale-x origin-right">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-droplet text-brand-accent text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Glucose</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Fasting blood sugar level.
+                                    Elevated glucose is a primary diabetes indicator. Normal range: 70-100 mg/dL.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-accent2/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-weight text-brand-accent2 text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">BMI</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Body Mass Index calculated
+                                    from height and weight. Higher BMI correlates strongly with insulin resistance.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-emerald/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-calendar text-brand-emerald text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Age</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Advancing age increases
+                                    diabetes risk. The model accounts for age-related metabolic changes.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-danger/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-heart-pulse text-brand-danger text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Blood Pressure</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Hypertension often co-occurs
+                                    with diabetes. Diastolic pressure is used in the model.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-warning/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-syringe text-brand-warning text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Insulin</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Serum insulin level.
+                                    Abnormal insulin production signals pancreatic dysfunction.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-info/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-layer-group text-brand-info text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Skin Thickness</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Triceps skin fold thickness
+                                    used as an indicator of body fat percentage.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-baby text-brand-accent text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Pregnancies</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Number of pregnancies.
+                                    History of gestational diabetes increases future risk.</p>
+                            </div>
+                            <div class="card-surface p-8 scroll-fade-up">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-brand-accent2/10 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-chart-line text-brand-accent2 text-xl"></i>
+                                </div>
+                                <h3 class="font-display text-lg font-bold mb-2">Pedigree Function</h3>
+                                <p class="text-gray-400 text-sm font-light leading-relaxed">Diabetes pedigree function
+                                    scoring genetic predisposition based on family history.</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-droplet text-brand-accent text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Glucose</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Fasting blood sugar level. Elevated glucose is a primary diabetes indicator. Normal range: 70-100 mg/dL.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-accent2/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-weight text-brand-accent2 text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">BMI</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Body Mass Index calculated from height and weight. Higher BMI correlates strongly with insulin resistance.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-emerald/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-calendar text-brand-emerald text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Age</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Advancing age increases diabetes risk. The model accounts for age-related metabolic changes.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-danger/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-heart-pulse text-brand-danger text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Blood Pressure</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Hypertension often co-occurs with diabetes. Diastolic pressure is used in the model.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-warning/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-syringe text-brand-warning text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Insulin</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Serum insulin level. Abnormal insulin production signals pancreatic dysfunction.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-info/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-layer-group text-brand-info text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Skin Thickness</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Triceps skin fold thickness used as an indicator of body fat percentage.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-baby text-brand-accent text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Pregnancies</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Number of pregnancies. History of gestational diabetes increases future risk.</p>
-                        </div>
-                        <div class="card-surface p-8 scroll-fade-up">
-                            <div class="w-12 h-12 rounded-xl bg-brand-accent2/10 flex items-center justify-center mb-4">
-                                <i class="fa-solid fa-chart-line text-brand-accent2 text-xl"></i>
-                            </div>
-                            <h3 class="font-display text-lg font-bold mb-2">Pedigree Function</h3>
-                            <p class="text-gray-400 text-sm font-light leading-relaxed">Diabetes pedigree function scoring genetic predisposition based on family history.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- SECTION 5: Platform Capabilities -->
-            <section id="capabilities" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative">
-                <div class="max-w-screen-2xl mx-auto relative z-10">
-                    <div class="mb-16 md:mb-24">
-                        <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Features</p>
-                        <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Platform Capabilities</h2>
-                        <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x"></div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-accent text-3xl mb-4"><i class="fa-solid fa-robot"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">ML Prediction Engine</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">Trained logistic regression model achieving high accuracy on the PIMA Indians dataset with real-time inference.</p>
-                        </div>
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-accent2 text-3xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">Role-Based Access</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">Three-tier security with Admin, Doctor, and Patient roles. Each role has tailored views and permissions.</p>
-                        </div>
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-emerald text-3xl mb-4"><i class="fa-solid fa-database"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">Persistent Records</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">All predictions stored in SQLite with full biometric data, timestamps, and user attribution for audit trail.</p>
-                        </div>
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-warning text-3xl mb-4"><i class="fa-solid fa-chart-pie"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">Analysis Dashboard</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">Interactive donut and bar charts visualizing risk distribution. Full CRUD on prediction history.</p>
-                        </div>
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-danger text-3xl mb-4"><i class="fa-solid fa-file-export"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">Diagnostic Reports</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">Printable reports with radar chart biometric profiles. CSV export for electronic health records.</p>
-                        </div>
-                        <div class="glass-card rounded-2xl p-8 scroll-fade-up">
-                            <div class="text-brand-accent text-3xl mb-4"><i class="fa-solid fa-message"></i></div>
-                            <h3 class="font-display text-xl font-bold mb-3">AI Health Assistant</h3>
-                            <p class="text-gray-400 font-light leading-relaxed text-sm">Context-aware chatbot providing instant answers to health queries about diabetes and related conditions.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3.5: Marquee Transition Reverse -->
-            <div class="marquee-container" style="transform: rotate(2deg) scale(1.05) translateY(-20px); transform-origin: center;">
-                <div class="marquee-content" style="animation-direction: reverse;">
-                    <span class="marquee-text">LOGISTIC REGRESSION</span>
-                    <span class="marquee-text">NEURAL PROCESSING</span>
-                    <span class="marquee-text">DATA SCIENCE</span>
-                    <span class="marquee-text">MACHINE LEARNING</span>
-                    <span class="marquee-text">BIOMETRIC ANALYSIS</span>
-                    <span class="marquee-text">CLOUD COMPUTING</span>
-                </div>
-                <div class="marquee-content" style="animation-direction: reverse;">
-                    <span class="marquee-text">LOGISTIC REGRESSION</span>
-                    <span class="marquee-text">NEURAL PROCESSING</span>
-                    <span class="marquee-text">DATA SCIENCE</span>
-                    <span class="marquee-text">MACHINE LEARNING</span>
-                    <span class="marquee-text">BIOMETRIC ANALYSIS</span>
-                    <span class="marquee-text">CLOUD COMPUTING</span>
-                </div>
-            </div>
-
-            <!-- SECTION 4: Analysis / Prediction -->
-            <section id="analysis" class="min-h-screen w-full px-12 md:px-24 py-32 bg-gradient-to-b from-transparent to-[#F7F0EB]/40 relative">
-                <div class="max-w-screen-2xl mx-auto">
-                    <div class="mb-16 scroll-fade">
-                        <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Engine</p>
-                        <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Diagnostic Analysis</h2>
-                        <div class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x"></div>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <!-- Left: Form -->
-                        <div>
-                            <form id="predictionForm" class="space-y-6">
-                                <div id="formError" class="hidden bg-red-50 border border-red-200 text-brand-danger text-sm px-4 py-3 rounded-xl"></div>
-                                <div>
-                                    <label class="block text-sm font-medium text-[#6B7280] mb-2">Patient Name</label>
-                                    <input type="text" id="name" name="name" required placeholder="Enter full name"
-                                           class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                    <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Name is required</p>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Glucose (mg/dL)</label>
-                                        <input type="number" id="glucose" name="glucose" min="0" max="300" step="0.1" required placeholder="e.g. 120"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-300</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">BMI</label>
-                                        <input type="number" id="bmi" name="bmi" min="0" max="100" step="0.1" required placeholder="e.g. 28.5"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-100</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Age (years)</label>
-                                        <input type="number" id="age" name="age" min="0" max="120" required placeholder="e.g. 45"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-120</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Blood Pressure (mmHg)</label>
-                                        <input type="number" id="bloodPressure" name="bloodPressure" min="0" max="300" step="0.1" required placeholder="e.g. 72"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-300</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Insulin (IU/mL)</label>
-                                        <input type="number" id="insulin" name="insulin" min="0" max="1000" step="0.1" required placeholder="e.g. 80"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-1000</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Skin Thickness (mm)</label>
-                                        <input type="number" id="skinThickness" name="skinThickness" min="0" max="100" step="0.1" required placeholder="e.g. 20"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-100</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Pregnancies</label>
-                                        <input type="number" id="pregnancies" name="pregnancies" min="0" max="20" required placeholder="e.g. 2"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-20</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Pedigree Function</label>
-                                        <input type="number" id="diabetesPedigreeFunction" name="diabetesPedigreeFunction" min="0" max="10" step="0.001" required placeholder="e.g. 0.5"
-                                               class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
-                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-10</p>
-                                    </div>
-                                </div>
-                                <button type="submit" id="submitBtn" class="w-full bg-brand-accent hover:bg-blue-700 text-white font-bold px-6 py-4 rounded-xl transition-all flex items-center justify-center gap-3 shadow-sm mt-8">
-                                    <span id="btn-text">Execute Analysis</span>
-                                    <i class="fa-solid fa-arrow-right" id="btn-icon"></i>
-                                </button>
-                            </form>
-                        </div>
-                        <!-- Right: Result Area -->
-                        <div id="resultArea" class="opacity-0 pointer-events-none translate-x-12 transition-all duration-700">
-                            <div class="card-surface p-8 mb-6">
-                                <div class="text-center mb-8">
-                                    <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Probability Score</p>
-                                    <div class="font-display text-8xl font-bold tabular-nums">
-                                        <span id="resultConfidence">0.0</span><span class="text-4xl text-gray-500">%</span>
-                                    </div>
-                                </div>
-                                <div class="text-center mb-8">
-                                    <span id="resultVerdict" class="text-2xl font-display font-bold tracking-tight"></span>
-                                    <p id="resultMessage" class="text-gray-400 mt-4 font-light"></p>
-                                </div>
-                                <div class="w-full h-[300px]">
-                                    <canvas id="radarChart"></canvas>
-                                </div>
+                <!-- SECTION 5: Platform Capabilities -->
+                <section id="capabilities" class="min-h-screen w-full px-6 sm:px-12 md:px-24 py-24 md:py-32 relative">
+                    <div class="max-w-screen-2xl mx-auto relative z-10">
+                        <div class="mb-16 md:mb-24">
+                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Features</p>
+                            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Platform
+                                Capabilities</h2>
+                            <div
+                                class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x">
                             </div>
-                            <!-- Detailed Metrics with Normal Ranges -->
-                            <div id="detailedMetrics" class="card-surface p-8 mb-6 hidden">
-                                <h3 class="font-display text-xl font-bold mb-6">Biometric Assessment</h3>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b border-[#E8E0D8] text-left">
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Metric</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Your Value</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Normal Range</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Status</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Assessment</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="metricsDetailBody"></tbody>
-                                    </table>
-                                </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-accent text-3xl mb-4"><i class="fa-solid fa-robot"></i></div>
+                                <h3 class="font-display text-xl font-bold mb-3">ML Prediction Engine</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">Trained logistic regression
+                                    model achieving high accuracy on the PIMA Indians dataset with real-time inference.
+                                </p>
                             </div>
-                            <!-- Previous Results Comparison -->
-                            <div id="historyComparison" class="card-surface p-8 mb-6 hidden">
-                                <h3 class="font-display text-xl font-bold mb-6">Previous Results for <span id="historyPatientName" class="text-brand-accent"></span></h3>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b border-[#E8E0D8] text-left">
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Date</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Risk</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Probability</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Glucose</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">BMI</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">BP</th>
-                                                <th class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">Insulin</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="historyComparisonBody"></tbody>
-                                    </table>
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-accent2 text-3xl mb-4"><i class="fa-solid fa-shield-halved"></i>
                                 </div>
+                                <h3 class="font-display text-xl font-bold mb-3">Role-Based Access</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">Three-tier security with
+                                    Admin, Doctor, and Patient roles. Each role has tailored views and permissions.</p>
+                            </div>
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-emerald text-3xl mb-4"><i class="fa-solid fa-database"></i></div>
+                                <h3 class="font-display text-xl font-bold mb-3">Persistent Records</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">All predictions stored in
+                                    SQLite with full biometric data, timestamps, and user attribution for audit trail.
+                                </p>
+                            </div>
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-warning text-3xl mb-4"><i class="fa-solid fa-chart-pie"></i>
+                                </div>
+                                <h3 class="font-display text-xl font-bold mb-3">Analysis Dashboard</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">Interactive donut and bar
+                                    charts visualizing risk distribution. Full CRUD on prediction history.</p>
+                            </div>
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-danger text-3xl mb-4"><i class="fa-solid fa-file-export"></i>
+                                </div>
+                                <h3 class="font-display text-xl font-bold mb-3">Diagnostic Reports</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">Printable reports with radar
+                                    chart biometric profiles. CSV export for electronic health records.</p>
+                            </div>
+                            <div class="glass-card rounded-2xl p-8 scroll-fade-up">
+                                <div class="text-brand-accent text-3xl mb-4"><i class="fa-solid fa-message"></i></div>
+                                <h3 class="font-display text-xl font-bold mb-3">AI Health Assistant</h3>
+                                <p class="text-gray-400 font-light leading-relaxed text-sm">Context-aware chatbot
+                                    providing instant answers to health queries about diabetes and related conditions.
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- AI Assistant Terminal -->
-            <div class="fixed bottom-8 right-8 z-40">
-                <button id="terminal-toggle" class="w-14 h-14 rounded-full bg-brand-accent text-white shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all">
-                    <i class="fa-solid fa-message text-xl"></i>
-                </button>
-            </div>
-            <div id="ai-terminal" class="fixed bottom-0 right-0 w-full md:w-[420px] h-[480px] z-50 translate-y-full transition-transform duration-500 ease-out">
-                <div class="glass-card rounded-t-2xl h-full flex flex-col shadow-2xl border border-[#E8E0D8]">
-                    <div class="flex justify-between items-center px-6 py-4 border-b border-[#E8E0D8]">
-                        <span class="font-display font-bold text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse"></span>AI Health Assistant</span>
-                        <button id="close-terminal" class="text-gray-400 hover:text-[#1A1A2E] transition-colors"><i class="fa-solid fa-chevron-down"></i></button>
+                <!-- SECTION 3.5: Marquee Transition Reverse -->
+                <div class="marquee-container"
+                    style="transform: rotate(2deg) scale(1.05) translateY(-20px); transform-origin: center;">
+                    <div class="marquee-content" style="animation-direction: reverse;">
+                        <span class="marquee-text">LOGISTIC REGRESSION</span>
+                        <span class="marquee-text">NEURAL PROCESSING</span>
+                        <span class="marquee-text">DATA SCIENCE</span>
+                        <span class="marquee-text">MACHINE LEARNING</span>
+                        <span class="marquee-text">BIOMETRIC ANALYSIS</span>
+                        <span class="marquee-text">CLOUD COMPUTING</span>
                     </div>
-                    <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-white/50 font-sans text-sm"></div>
-                    <form id="chat-form" class="px-6 py-4 border-t border-[#E8E0D8] bg-white/30">
-                        <div class="flex gap-3">
-                            <input id="chat-input" type="text" placeholder="Ask about diabetes, glucose, BMI..." class="flex-1 bg-white border border-[#D1D5DB] rounded-full px-4 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all">
-                            <button type="submit" class="w-10 h-10 rounded-full bg-brand-accent text-white flex items-center justify-center hover:bg-blue-700 transition-colors"><i class="fa-solid fa-arrow-up text-sm"></i></button>
-                        </div>
-                    </form>
+                    <div class="marquee-content" style="animation-direction: reverse;">
+                        <span class="marquee-text">LOGISTIC REGRESSION</span>
+                        <span class="marquee-text">NEURAL PROCESSING</span>
+                        <span class="marquee-text">DATA SCIENCE</span>
+                        <span class="marquee-text">MACHINE LEARNING</span>
+                        <span class="marquee-text">BIOMETRIC ANALYSIS</span>
+                        <span class="marquee-text">CLOUD COMPUTING</span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Footer -->
-            <footer class="w-full px-12 md:px-24 py-12 border-t border-[#E8E0D8]">
-                <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                    <span class="font-display font-bold text-sm text-gray-400">DiabPredict AI &copy; 2026</span>
-                    <span class="text-xs text-gray-500">Medical Intelligence Layer 2.0 &mdash; Built with Flask &amp; Three.js</span>
+                <!-- SECTION 4: Analysis / Prediction -->
+                <section id="analysis"
+                    class="min-h-screen w-full px-12 md:px-24 py-32 bg-gradient-to-b from-transparent to-[#F7F0EB]/40 relative">
+                    <div class="max-w-screen-2xl mx-auto">
+                        <div class="mb-16 scroll-fade">
+                            <p class="text-brand-accent text-sm tracking-widest uppercase mb-4 font-sans">Engine</p>
+                            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tight mb-4">Diagnostic
+                                Analysis</h2>
+                            <div
+                                class="w-full h-[1px] bg-gradient-to-r from-brand-accent to-transparent scroll-scale-x">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                            <!-- Left: Form -->
+                            <div>
+                                <form id="predictionForm" class="space-y-6">
+                                    <div id="formError"
+                                        class="hidden bg-red-50 border border-red-200 text-brand-danger text-sm px-4 py-3 rounded-xl">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-[#6B7280] mb-2">Patient
+                                            Name</label>
+                                        <input type="text" id="name" name="name" required placeholder="Enter full name"
+                                            class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                        <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                class="fa-solid fa-circle-exclamation mr-1"></i>Name is required</p>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Glucose
+                                                (mg/dL)</label>
+                                            <input type="number" id="glucose" name="glucose" min="0" max="300"
+                                                step="0.1" required placeholder="e.g. 120"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-300</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">BMI</label>
+                                            <input type="number" id="bmi" name="bmi" min="0" max="100" step="0.1"
+                                                required placeholder="e.g. 28.5"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-100</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Age
+                                                (years)</label>
+                                            <input type="number" id="age" name="age" min="0" max="120" required
+                                                placeholder="e.g. 45"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-120</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Blood Pressure
+                                                (mmHg)</label>
+                                            <input type="number" id="bloodPressure" name="bloodPressure" min="0"
+                                                max="300" step="0.1" required placeholder="e.g. 72"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-300</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Insulin
+                                                (IU/mL)</label>
+                                            <input type="number" id="insulin" name="insulin" min="0" max="1000"
+                                                step="0.1" required placeholder="e.g. 80"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-1000</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Skin Thickness
+                                                (mm)</label>
+                                            <input type="number" id="skinThickness" name="skinThickness" min="0"
+                                                max="100" step="0.1" required placeholder="e.g. 20"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-100</p>
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="block text-sm font-medium text-[#6B7280] mb-2">Pregnancies</label>
+                                            <input type="number" id="pregnancies" name="pregnancies" min="0" max="20"
+                                                required placeholder="e.g. 2"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-20</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-[#6B7280] mb-2">Pedigree
+                                                Function</label>
+                                            <input type="number" id="diabetesPedigreeFunction"
+                                                name="diabetesPedigreeFunction" min="0" max="10" step="0.001" required
+                                                placeholder="e.g. 0.5"
+                                                class="w-full bg-white border border-[#D1D5DB] rounded-xl px-4 py-3 text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all shadow-sm">
+                                            <p class="validation-msg hidden text-brand-danger text-xs mt-1"><i
+                                                    class="fa-solid fa-circle-exclamation mr-1"></i>Enter 0-10</p>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="submitBtn"
+                                        class="w-full bg-brand-accent hover:bg-blue-700 text-white font-bold px-6 py-4 rounded-xl transition-all flex items-center justify-center gap-3 shadow-sm mt-8">
+                                        <span id="btn-text">Execute Analysis</span>
+                                        <i class="fa-solid fa-arrow-right" id="btn-icon"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <!-- Right: Result Area -->
+                            <div id="resultArea"
+                                class="opacity-0 pointer-events-none translate-x-12 transition-all duration-700">
+                                <div class="card-surface p-8 mb-6">
+                                    <div class="text-center mb-8">
+                                        <p class="text-gray-400 text-sm tracking-widest uppercase mb-2">Probability
+                                            Score</p>
+                                        <div class="font-display text-8xl font-bold tabular-nums">
+                                            <span id="resultConfidence">0.0</span><span
+                                                class="text-4xl text-gray-500">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mb-8">
+                                        <span id="resultVerdict"
+                                            class="text-2xl font-display font-bold tracking-tight"></span>
+                                        <p id="resultMessage" class="text-gray-400 mt-4 font-light"></p>
+                                    </div>
+                                    <div class="w-full h-[300px]">
+                                        <canvas id="radarChart"></canvas>
+                                    </div>
+                                </div>
+                                <!-- Detailed Metrics with Normal Ranges -->
+                                <div id="detailedMetrics" class="card-surface p-8 mb-6 hidden">
+                                    <h3 class="font-display text-xl font-bold mb-6">Biometric Assessment</h3>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-[#E8E0D8] text-left">
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Metric</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Your Value</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Normal Range</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Status</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Assessment</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="metricsDetailBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- Previous Results Comparison -->
+                                <div id="historyComparison" class="card-surface p-8 mb-6 hidden">
+                                    <h3 class="font-display text-xl font-bold mb-6">Previous Results for <span
+                                            id="historyPatientName" class="text-brand-accent"></span></h3>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-sm">
+                                            <thead>
+                                                <tr class="border-b border-[#E8E0D8] text-left">
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Date</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Risk</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Probability</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Glucose</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        BMI</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        BP</th>
+                                                    <th
+                                                        class="px-4 py-3 text-gray-400 font-medium tracking-widest uppercase text-xs">
+                                                        Insulin</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="historyComparisonBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Assistant Terminal -->
+                <div class="fixed bottom-8 right-8 z-40">
+                    <button id="terminal-toggle"
+                        class="w-14 h-14 rounded-full bg-brand-accent text-white shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all">
+                        <i class="fa-solid fa-message text-xl"></i>
+                    </button>
                 </div>
-            </footer>
+                <div id="ai-terminal"
+                    class="fixed bottom-0 right-0 w-full md:w-[420px] h-[480px] z-50 translate-y-full transition-transform duration-500 ease-out">
+                    <div class="glass-card rounded-t-2xl h-full flex flex-col shadow-2xl border border-[#E8E0D8]">
+                        <div class="flex justify-between items-center px-6 py-4 border-b border-[#E8E0D8]">
+                            <span class="font-display font-bold text-sm flex items-center gap-2"><span
+                                    class="w-2 h-2 rounded-full bg-brand-emerald animate-pulse"></span>AI Health
+                                Assistant</span>
+                            <button id="close-terminal" class="text-gray-400 hover:text-[#1A1A2E] transition-colors"><i
+                                    class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                        <div id="chat-messages"
+                            class="flex-1 overflow-y-auto p-6 space-y-4 bg-white/50 font-sans text-sm"></div>
+                        <form id="chat-form" class="px-6 py-4 border-t border-[#E8E0D8] bg-white/30">
+                            <div class="flex gap-3">
+                                <input id="chat-input" type="text" placeholder="Ask about diabetes, glucose, BMI..."
+                                    class="flex-1 bg-white border border-[#D1D5DB] rounded-full px-4 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:border-brand-accent transition-all">
+                                <button type="submit"
+                                    class="w-10 h-10 rounded-full bg-brand-accent text-white flex items-center justify-center hover:bg-blue-700 transition-colors"><i
+                                        class="fa-solid fa-arrow-up text-sm"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="w-full px-12 md:px-24 py-12 border-t border-[#E8E0D8]">
+                    <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                        <span class="font-display font-bold text-sm text-gray-400">DiabPredict AI &copy; 2026</span>
+                        <span class="text-xs text-gray-500">Medical Intelligence Layer 2.0 &mdash; Built with Flask
+                            &amp; Three.js</span>
+                    </div>
+                </footer>
         </div>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
-    // Coding Effect Logic for Neural Workflow
-    document.addEventListener("DOMContentLoaded", () => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
-                    entry.target.classList.add('typed');
-                    const code = entry.target.getAttribute('data-code');
-                    let i = 0;
-                    entry.target.innerText = '';
-                    const type = () => {
-                        if (i < code.length) {
-                            entry.target.innerText += code.charAt(i);
-                            i++;
-                            setTimeout(type, 10 + Math.random() * 20); // Fast matrix typing
-                        }
-                    };
-                    setTimeout(type, 300); // Small delay after intersecting
-                }
+        // Coding Effect Logic for Neural Workflow
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
+                        entry.target.classList.add('typed');
+                        const code = entry.target.getAttribute('data-code');
+                        let i = 0;
+                        entry.target.innerText = '';
+                        const type = () => {
+                            if (i < code.length) {
+                                entry.target.innerText += code.charAt(i);
+                                i++;
+                                setTimeout(type, 10 + Math.random() * 20); // Fast matrix typing
+                            }
+                        };
+                        setTimeout(type, 300); // Small delay after intersecting
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('.coding-effect').forEach(el => {
+                el.innerText = ""; // Clear initially
+                observer.observe(el);
             });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.coding-effect').forEach(el => {
-            el.innerText = ""; // Clear initially
-            observer.observe(el);
         });
-    });
 
-    (function prefillForm() {
-        const hash = window.location.hash;
-        if (!hash || hash === '#') return;
-        const params = new URLSearchParams(hash.substring(1));
-        const name = document.getElementById('name');
-        if (name && params.get('name')) name.value = params.get('name');
-        const fields = ['glucose','bmi','age','bloodPressure','insulin','skinThickness','pregnancies','diabetesPedigreeFunction'];
-        fields.forEach(f => {
-            const el = document.getElementById(f);
-            if (el && params.get(f)) el.value = params.get(f);
-        });
-        window.location.hash = '';
-        setTimeout(() => {
-            document.getElementById('analysis').scrollIntoView({ behavior: 'smooth' });
-        }, 500);
-    })();
+        (function prefillForm() {
+            const hash = window.location.hash;
+            if (!hash || hash === '#') return;
+            const params = new URLSearchParams(hash.substring(1));
+            const name = document.getElementById('name');
+            if (name && params.get('name')) name.value = params.get('name');
+            const fields = ['glucose', 'bmi', 'age', 'bloodPressure', 'insulin', 'skinThickness', 'pregnancies', 'diabetesPedigreeFunction'];
+            fields.forEach(f => {
+                const el = document.getElementById(f);
+                if (el && params.get(f)) el.value = params.get(f);
+            });
+            window.location.hash = '';
+            setTimeout(() => {
+                document.getElementById('analysis').scrollIntoView({ behavior: 'smooth' });
+            }, 500);
+        })();
     </script>
 </body>
+
 </html>
