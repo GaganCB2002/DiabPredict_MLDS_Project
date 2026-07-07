@@ -327,7 +327,7 @@
             csv += '\nPrediction,Probability,Message\n';
             
             const predictionText = "{{ 'High Risk' if result.prediction == 1 else 'Low Risk' }}";
-            const messageText = {{ result.message | tojson }};
+            const messageText = "{{ result.message }}";
             csv += escCSV(predictionText) + ',' + prob.toFixed(1) + '%,' + escCSV(messageText) + '\n';
             
             /* {% if history %} */
